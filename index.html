@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escala NOC — Ufinet</title>
+    <link rel="stylesheet" href="index.css?v=18">
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="logged-out">
+
+    <!-- ================= TELA DE LOGIN ================= -->
+    <div id="login-screen" class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <svg class="login-logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" fill="#2563eb" fill-opacity="0.1" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 6V12L16 14" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <h2 class="login-title">Gestão Time Ufinet</h2>
+                <p class="login-subtitle">Acesso ao Painel Operacional NOC</p>
+            </div>
+            
+            <form id="login-form" onsubmit="event.preventDefault();">
+                <div class="form-group-login">
+                    <label for="login-username">Usuário</label>
+                    <input type="text" id="login-username" class="login-input" placeholder="Seu usuário..." required>
+                </div>
+                <div class="form-group-login">
+                    <label for="login-password">Senha</label>
+                    <input type="password" id="login-password" class="login-input" placeholder="••••••••" required>
+                </div>
+                <button type="submit" id="btn-login" class="btn-login">
+                    <span>Entrar no Sistema</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= DASHBOARD APP CONTAINER ================= -->
+    <div class="app-container">
+        <!-- Sidebar Lateral (Esquerda) -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-container">
+                    <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 6V12L16 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <div class="logo-text">
+                        <span class="logo-title">Gestão Time</span>
+                        <span class="logo-subtitle">Ufinet <span class="badge">NOC</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="sidebar-menu">
+                <ul>
+                    <li class="menu-item">
+                        <a href="#" class="menu-link active" data-target="view-dashboard">
+                            <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="7" height="9" rx="1" />
+                                <rect x="14" y="3" width="7" height="5" rx="1" />
+                                <rect x="14" y="12" width="7" height="9" rx="1" />
+                                <rect x="3" y="16" width="7" height="5" rx="1" />
+                            </svg>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    
+                    <!-- Aba Exclusiva do Coordenador (Admin) -->
+                    <li class="menu-item admin-only" id="menu-admin-profiles" style="display: none;">
+                        <a href="#" class="menu-link" data-target="view-manage-profiles">
+                            <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                            </svg>
+                            <span>Gerenciar Perfis</span>
+                        </a>
+                    </li>
+                    
+                    <li class="menu-item expanded">
+                        <a href="#" class="menu-link active-parent" data-target="view-turnos-noc">
+                            <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                <line x1="16" y1="2" x2="16" y2="6"/>
+                                <line x1="8" y1="2" x2="8" y2="6"/>
+                                <line x1="3" y1="10" x2="21" y2="10"/>
+                            </svg>
+                            <span>Escala</span>
+                            <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </a>
+                        <ul class="submenu">
+                            <li><a href="#" class="submenu-link" data-target="view-turnos-noc">Turnos NOC</a></li>
+                            <li><a href="#" class="submenu-link" data-target="view-sobreaviso">Sobreaviso</a></li>
+                            <li><a href="#" class="submenu-link" data-target="view-controle-ferias">Controle de Férias</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar" id="avatar-letters">BD</div>
+                    <div class="user-info">
+                        <span class="user-name" id="user-display-name">Breno da Guia</span>
+                        <span class="user-role" id="user-display-role">Coordenador (NOC)</span>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <a href="#" class="footer-link">
+                        <svg class="footer-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        <span>Minha Conta</span>
+                    </a>
+                    <a href="#" class="footer-link logout" id="btn-logout">
+                        <svg class="footer-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
+                        </svg>
+                        <span>Sair</span>
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Conteúdo Principal (Direita) -->
+        <main class="main-content">
+            <!-- Barra Superior / Header -->
+            <header class="content-header">
+                <div class="header-title-container">
+                    <h1 class="header-title" id="page-main-title">Escala NOC — Visualização e Gestão</h1>
+                    <p class="header-subtitle" id="page-main-subtitle">Escala mensal &bull; Gestão de equipes integrada</p>
+                </div>
+                <div class="header-right">
+                    <!-- Banner indicador de conexão banco Supabase -->
+                    <div id="supabase-status-banner" style="margin-right: 12px;">
+                        <span class="card-tag status-folga" style="font-size:11px; padding:4px 8px;">Estado: Conectando...</span>
+                    </div>
+                    <!-- Seletor de Perfil de Acesso (Invisível, mas útil para testes internos) -->
+                    <div class="profile-switcher-wrapper" style="display:none;">
+                        <label for="profile-select">Perfil Ativo:</label>
+                        <select id="profile-select" class="profile-select">
+                            <option value="coordenador" selected>Coordenador (Edição Total)</option>
+                            <option value="noc">NOC (Visualização)</option>
+                            <option value="rh">RH (Visualização)</option>
+                        </select>
+                    </div>
+                    <div class="system-clock" id="system-clock">21:59</div>
+                </div>
+            </header>
+
+            <!-- ================= VIEW 1: TURNOS NOC ================= -->
+            <div id="view-turnos-noc" class="view-section">
+                <!-- Painel de Filtros -->
+                <section class="filters-card">
+                    <div class="filters-grid">
+                        <div class="filter-group">
+                            <label for="filter-year">Ano</label>
+                            <select id="filter-year" class="filter-select">
+                                <option value="2025">2025</option>
+                                <option value="2026" selected>2026</option>
+                                <option value="2027">2027</option>
+                                <option value="2028">2028</option>
+                                <option value="2029">2029</option>
+                                <option value="2030">2030</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="filter-month">Mês</label>
+                            <select id="filter-month" class="filter-select">
+                                <option value="1">Janeiro</option>
+                                <option value="2">Fevereiro</option>
+                                <option value="3">Março</option>
+                                <option value="4">Abril</option>
+                                <option value="5">Maio</option>
+                                <option value="6">Junho</option>
+                                <option value="7" selected>Julho</option>
+                                <option value="8">Agosto</option>
+                                <option value="9">Setembro</option>
+                                <option value="10">Outubro</option>
+                                <option value="11">Novembro</option>
+                                <option value="12">Dezembro</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="filter-team">Equipe</label>
+                            <select id="filter-team" class="filter-select">
+                                <option value="all" selected>N1 e Torre de Controle</option>
+                                <option value="n1">Equipe N1</option>
+                                <option value="torre">Torre de Controle</option>
+                            </select>
+                        </div>
+                        <div class="filter-group search-group">
+                            <label for="search-employee">Buscar funcionário</label>
+                            <div class="search-input-wrapper">
+                                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                                </svg>
+                                <input type="text" id="search-employee" class="filter-input" placeholder="Nome do funcionário...">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Legenda dos Turnos -->
+                    <div class="legend-container">
+                        <span class="legend-title">Legenda:</span>
+                        <div class="legend-items">
+                            <span class="legend-item"><span class="legend-color-box status-9h18h"></span> 9h-18h (Sup)</span>
+                            <span class="legend-item"><span class="legend-color-box status-7h16h"></span> 7h-16h</span>
+                            <span class="legend-item"><span class="legend-color-box status-9h21h"></span> 09h-21h</span>
+                            <span class="legend-item"><span class="legend-color-box status-7h19h"></span> 07h-19h / 19h-7h</span>
+                            <span class="legend-item"><span class="legend-color-box status-12h21h"></span> 12h-21h / 13h-21h</span>
+                            <span class="legend-item"><span class="legend-color-box status-13h22h"></span> 13h-22h / 14h-22h</span>
+                            <span class="legend-item"><span class="legend-color-box status-22h07h"></span> 22h-07h / 21h-07h</span>
+                            <span class="legend-item"><span class="legend-color-box status-15h00h"></span> 15h-00h</span>
+                            <span class="legend-item"><span class="legend-color-box status-ferias"></span> FÉRIAS</span>
+                            <span class="legend-item"><span class="legend-color-box status-atestado"></span> Atestado</span>
+                            <span class="legend-item"><span class="legend-color-box status-folga"></span> Folga</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Grade de Escala Completa -->
+                <section class="grid-card">
+                    <div class="card-header">
+                        <div class="card-title-wrapper">
+                            <h2 class="card-title">Escala Julho 2026 (Mês Completo - 01 a 31)</h2>
+                            <span class="card-tag status-ready" id="access-badge">Acesso Coordenador (Edição)</span>
+                        </div>
+                        <div class="card-info-helper">
+                            <small class="helper-text-edit">* Dê um clique em qualquer célula de turno para editá-la (Perfil Coordenador).</small>
+                        </div>
+                    </div>
+                    
+                    <div class="table-scroll-container">
+                        <table class="schedule-table">
+                            <thead>
+                                <tr class="header-days-row">
+                                    <th class="col-employee">Colaborador</th>
+                                    <!-- Dynamic headers will be generated here -->
+                                </tr>
+                            </thead>
+                            <tbody id="turnos-noc-tbody">
+                                <!-- Dinamicamente renderizado via JS com dados do banco de dados -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ================= VIEW 2: DASHBOARD ================= -->
+            <div id="view-dashboard" class="view-section active-view">
+                <section class="dashboard-metrics-grid" style="grid-template-columns: repeat(3, 1fr);">
+                    <div class="metric-card">
+                        <span class="metric-title">Colaboradores Ativos</span>
+                        <span class="metric-value">... <span class="metric-total">Ativos</span></span>
+                        <span class="metric-trend text-green">&bull; Operação Normal</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-title">Turnos em Andamento (Hoje)</span>
+                        <span class="metric-value">... <span class="metric-total">Em Plantão</span></span>
+                        <span class="metric-trend text-blue">...</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-title">Afastamentos / Atestados (Hoje)</span>
+                        <span class="metric-value">... <span class="metric-total">Ativos</span></span>
+                        <span class="metric-trend text-orange">...</span>
+                    </div>
+                </section>
+
+                <div class="dashboard-widgets-grid">
+                    <div class="widget-card">
+                        <h3 class="widget-title">Resumo Operacional (Turnos Ufinet)</h3>
+                        <div class="widget-content">
+                            <p style="font-size:13px; color:#475569; margin-bottom: 12px;">Visualização consolidada do balanceamento de cobertura para o mês corrente.</p>
+                            <div class="progress-item">
+                                <div class="progress-label"><span>Turno N1 (09h-21h)</span><span>...% Cobertura</span></div>
+                                <div class="progress-bar-wrapper"><div class="progress-bar-fill" style="width: 0%; background-color:#2563eb;"></div></div>
+                            </div>
+                            <div class="progress-item">
+                                <div class="progress-label"><span>Turno Torre (22h-07h)</span><span>...% Cobertura</span></div>
+                                <div class="progress-bar-wrapper"><div class="progress-bar-fill" style="width: 0%; background-color:#10b981;"></div></div>
+                            </div>
+                            <div class="progress-item">
+                                <div class="progress-label"><span>Plantões Finais de Semana</span><span>...% Equidade</span></div>
+                                <div class="progress-bar-wrapper"><div class="progress-bar-fill" style="width: 0%; background-color:#f59e0b;"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="widget-card">
+                        <h3 class="widget-title">Alertas Importantes</h3>
+                        <div class="widget-content">
+                            <ul class="alert-list">
+                                <!-- Dinamicamente renderizado via JS -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= VIEW 3: SOBREAVISO ================= -->
+            <div id="view-sobreaviso" class="view-section">
+                <!-- Painel de Filtros para Sobreaviso -->
+                <section class="filters-card">
+                    <div class="filters-grid" style="grid-template-columns: repeat(3, 1fr);">
+                        <div class="filter-group">
+                            <label for="filter-sobre-year">Ano</label>
+                            <select id="filter-sobre-year" class="filter-select">
+                                <option value="2025">2025</option>
+                                <option value="2026" selected>2026</option>
+                                <option value="2027">2027</option>
+                                <option value="2028">2028</option>
+                                <option value="2029">2029</option>
+                                <option value="2030">2030</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="filter-sobre-month">Mês</label>
+                            <select id="filter-sobre-month" class="filter-select">
+                                <option value="1">Janeiro</option>
+                                <option value="2">Fevereiro</option>
+                                <option value="3">Março</option>
+                                <option value="4">Abril</option>
+                                <option value="5">Maio</option>
+                                <option value="6">Junho</option>
+                                <option value="7" selected>Julho</option>
+                                <option value="8">Agosto</option>
+                                <option value="9">Setembro</option>
+                                <option value="10">Outubro</option>
+                                <option value="11">Novembro</option>
+                                <option value="12">Dezembro</option>
+                            </select>
+                        </div>
+                        <div class="filter-group search-group">
+                            <label for="search-sobre-employee">Buscar funcionário</label>
+                            <div class="search-input-wrapper">
+                                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                                </svg>
+                                <input type="text" id="search-sobre-employee" class="filter-input" placeholder="Nome do funcionário...">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="grid-card">
+                    <div class="card-header">
+                        <h2 class="card-title" id="title-sobreaviso-month">Escala de Sobreaviso NOC (Julho 2026)</h2>
+                    </div>
+                    <div class="table-scroll-container">
+                        <table class="schedule-table">
+                            <thead>
+                                <tr class="header-days-row">
+                                    <th class="col-employee">Colaborador</th>
+                                    <!-- Dynamic headers will be generated here -->
+                                </tr>
+                            </thead>
+                            <tbody id="sobreaviso-tbody">
+                                <!-- Dinamicamente renderizado via JS com dados do banco de dados -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ================= VIEW 4: CONTROLE DE FÉRIAS / APROVAÇÃO FÉRIAS ================= -->
+            <div id="view-controle-ferias" class="view-section">
+                <div class="vacation-layout-grid" id="vacation-layout-container">
+                    
+                    <!-- Painel de Solicitação (Invisível por padrão, visível apenas para NOC) -->
+                    <section class="form-card" id="vacation-request-card" style="display:none;">
+                        <h3 class="form-card-title" style="margin-bottom:16px;">Solicitar Férias</h3>
+                        <form id="vacation-request-form" onsubmit="event.preventDefault();">
+                            <div class="filter-group" style="margin-bottom:12px;">
+                                <label for="vac-req-start">Data de Início</label>
+                                <input type="date" id="vac-req-start" class="filter-input" style="padding-left:12px;" required>
+                            </div>
+                            <div class="filter-group" style="margin-bottom:12px;">
+                                <label for="vac-req-end">Data de Término</label>
+                                <input type="date" id="vac-req-end" class="filter-input" style="padding-left:12px;" required>
+                            </div>
+                            <button type="button" id="btn-submit-vacation" class="btn-submit-custom" style="width:100%; margin-top:8px;">
+                                Enviar Solicitação
+                            </button>
+                        </form>
+                    </section>
+
+                    <!-- Tabela de Planejamento de Férias -->
+                    <section class="grid-card" id="vacation-list-card" style="flex:1;">
+                        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                            <h2 class="card-title">Planejamento e Programação de Férias NOC 2026</h2>
+                            
+                            <!-- Seletor de Mês das Férias -->
+                            <div class="filter-group" style="flex-direction:row; gap:8px; align-items:center; margin-bottom:0;">
+                                <label for="filter-vacation-month" style="margin-bottom:0; font-weight:700;">Filtrar Mês:</label>
+                                <select id="filter-vacation-month" class="filter-select" style="width:150px; height:34px;">
+                                    <option value="all">Todos os Meses</option>
+                                    <option value="1">Janeiro</option>
+                                    <option value="2">Fevereiro</option>
+                                    <option value="3">Março</option>
+                                    <option value="4">Abril</option>
+                                    <option value="5">Maio</option>
+                                    <option value="6">Junho</option>
+                                    <option value="7" selected>Julho</option>
+                                    <option value="8">Agosto</option>
+                                    <option value="9">Setembro</option>
+                                    <option value="10">Outubro</option>
+                                    <option value="11">Novembro</option>
+                                    <option value="12">Dezembro</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="table-scroll-container">
+                            <table class="schedule-table" style="width:100%; table-layout:auto;">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align:left; padding-left:12px;">Colaborador</th>
+                                        <th>Período de Férias</th>
+                                        <th>Duração (Dias)</th>
+                                        <th>Status do Período</th>
+                                        <th class="admin-only-header" style="display:none;">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="vacation-rows">
+                                    <!-- Dynamic rows from Supabase will go here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- ================= VIEW 5: GERENCIAR PERFIS (ADMIN-ONLY) ================= -->
+            <div id="view-manage-profiles" class="view-section">
+                <!-- Inputs ocultos para edição de dados -->
+                <input type="hidden" id="prof-edit-id" value="">
+                <input type="hidden" id="prof-edit-old-name" value="">
+
+                <div class="dashboard-widgets-grid">
+                    <section class="form-card">
+                        <h3 class="form-card-title" id="profile-form-title" style="margin-bottom:16px;">Cadastrar Novo Colaborador (Perfil)</h3>
+                        <form id="profile-create-form" onsubmit="event.preventDefault();">
+                            <div class="form-grid">
+                                <div class="filter-group">
+                                    <label for="prof-name">Nome Completo</label>
+                                    <input type="text" id="prof-name" class="filter-input" placeholder="Ex: Fernanda Souza" style="padding-left:12px;" required>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="prof-username">Usuário (Login)</label>
+                                    <input type="text" id="prof-username" class="filter-input" placeholder="Ex: fernanda.souza" style="padding-left:12px;" required>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="prof-password">Senha de Acesso</label>
+                                    <input type="password" id="prof-password" class="filter-input" placeholder="Senha de Acesso..." style="padding-left:12px;" required>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="prof-role">Função / Perfil de Acesso</label>
+                                    <select id="prof-role" class="filter-select" required>
+                                        <option value="noc">NOC (Visualização)</option>
+                                        <option value="rh">RH (Visualização)</option>
+                                        <option value="coordenador">Coordenador (Edição e Aprovação)</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="prof-team">Equipe Operacional</label>
+                                    <select id="prof-team" class="filter-select" required>
+                                        <option value="n1">Equipe N1</option>
+                                        <option value="torre">Torre de Controle</option>
+                                        <option value="rh">Recursos Humanos (RH)</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group" id="container-prof-oncall">
+                                    <label for="prof-oncall">Participa da Escala?</label>
+                                    <select id="prof-oncall" class="filter-select" required>
+                                        <option value="nao" selected>Sim (Escala Turnos NOC)</option>
+                                        <option value="sim">Sim (Escala Sobreaviso)</option>
+                                        <option value="fora">Não (Apenas Perfil / RH / Admin)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="button" id="btn-create-profile" class="btn-submit-custom" style="margin-top:20px;">
+                                Salvar Perfil e Criar Acesso
+                            </button>
+                        </form>
+                    </section>
+
+                    <section class="widget-card">
+                        <h3 class="widget-title">Perfis Criados</h3>
+                        <div class="table-scroll-container">
+                            <table class="schedule-table" id="table-manage-profiles-list" style="width:100%; table-layout:auto;">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align:left; padding-left:10px;">Nome</th>
+                                        <th>Usuário</th>
+                                        <th>Perfil</th>
+                                        <th>Plantonista?</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recent-profiles-rows">
+                                    <!-- Dynamic rows from database will go here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Popover de Seleção de Turno -->
+    <div id="shift-popover" class="shift-popover" style="display: none;">
+        <div class="popover-header">Selecionar Turno</div>
+        <div class="popover-options"></div>
+    </div>
+
+    <!-- Notificações Toast -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Script de Configuração (Supabase Keys) -->
+    <script src="config.js"></script>
+    <!-- CDN do Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="index.js?v=18"></script>
+</body>
+</html>
