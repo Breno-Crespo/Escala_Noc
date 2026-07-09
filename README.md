@@ -54,24 +54,29 @@ A aplicação utiliza uma arquitetura **Single Page Application (SPA)** nativa:
 
 ## 📂 Estrutura do Projeto
 
-* `index.html`: Casca estrutural e leiaute da SPA.
-* `index.css`: Estilização e design de cartões premium.
-* `index.js`: Lógica de renderização, lógica de calendário, cálculos do dashboard e sincronizadores.
-* `config.js`: Credenciais de conexão ao banco de dados Supabase (injetado no escopo global).
-* `supabase_schema.sql`: Script SQL contendo a criação das tabelas, políticas RLS e inserts de fábrica.
-* `.env`: Configuração das chaves de ambiente.
-* `.gitignore`: Exclusão de arquivos confidenciais do repositório Git.
+* **`frontend/`** (Front-End & Lógica da Aplicação):
+  * `index.html`: Casca estrutural e leiaute da SPA.
+  * `index.css`: Estilização e design de cartões premium.
+  * `index.js`: Lógica de renderização, lógica de calendário, cálculos do dashboard e sincronizadores.
+  * `config.js`: Credenciais de conexão ao banco de dados Supabase (injetado no escopo global).
+  * `.env`: Configuração das chaves de ambiente.
+* **`database/`** (Estrutura do Banco de Dados):
+  * `supabase_schema.sql`: Script SQL contendo a criação das tabelas, políticas RLS e inserts de fábrica.
+* **Raiz do Repositório**:
+  * `.gitignore`: Exclusão de arquivos confidenciais do repositório Git.
+  * `README.md`: Documentação geral da aplicação.
+  * `walkthrough.md`: Relatórios e histórico de alterações.
 
 ---
 
 ## 💻 Como Rodar o Projeto Localmente
 
 ### Opção 1: Duplo Clique (Rápido)
-1. Navegue até a pasta do projeto.
+1. Navegue até a pasta do projeto e entre em `frontend/`.
 2. Dê um duplo clique no arquivo `index.html`. Ele abrirá diretamente em seu navegador preferido.
 
 ### Opção 2: Servidor Python Local
-Se desejar rodar em um servidor local simulando produção, execute na pasta do projeto:
+Se desejar rodar em um servidor local simulando produção, navegue até a pasta `frontend/` e execute:
 ```bash
 python -m http.server 8000
 ```
@@ -85,8 +90,8 @@ Caso queira inicializar a aplicação em um novo projeto do Supabase:
 
 1. Crie um projeto no Supabase.
 2. Vá em **SQL Editor** no painel da esquerda do Supabase.
-3. Copie todo o conteúdo de `supabase_schema.sql` e execute o comando run. Isso criará automaticamente as tabelas `profiles`, `shifts`, `sobreaviso`, `vacations` e o usuário `admin`/`admin`.
-4. Obtenha a **URL da API** e a **Public Anon Key** no painel e substitua as variáveis em `config.js`:
+3. Copie todo o conteúdo de `database/supabase_schema.sql` e execute o comando run. Isso criará automaticamente as tabelas `profiles`, `shifts`, `sobreaviso`, `vacations` e o usuário `admin`/`admin`.
+4. Obtenha a **URL da API** e a **Public Anon Key** no painel e substitua as variáveis em `frontend/config.js`:
    ```javascript
    window.env = {
        SUPABASE_URL: "https://seu-projeto.supabase.co",
