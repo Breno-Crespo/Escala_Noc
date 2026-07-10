@@ -207,6 +207,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
 
                 if (matched) {
+                    // Salvar sessão persistente
+                    localStorage.setItem('ufinet_session', JSON.stringify({
+                        id: matched.id,
+                        name: matched.name,
+                        username: matched.username,
+                        role: matched.role,
+                        team: matched.team,
+                        oncall: matched.oncall
+                    }));
+
                     profileSelect.value = matched.role;
                     applyProfilePermissions();
                     
@@ -238,6 +248,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         btnLogout.addEventListener('click', (e) => {
             e.preventDefault();
             
+            localStorage.removeItem('ufinet_session');
             document.body.classList.add('logged-out');
             if (loginForm) loginForm.reset();
             
@@ -1695,7 +1706,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             const oldName = document.getElementById('prof-edit-old-name').value;
             
             if (!name || !username || !role || !password) {
-                showToast('Por favor, preencha todos os campos obrigatórios del perfil (incluindo senha).', 'error');
+                showToast('Por favor, preencha todos os campos obrigatórios do perfil (incluindo senha).', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                showToast('A senha deve ter no mínimo 6 caracteres por segurança.', 'error');
                 return;
             }
 
@@ -1857,4 +1873,33 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 3. Aplicar restrições de visibilidade de perfis
     applyProfilePermissions();
+
+    // 4. Verificar sessão persistente (Login Automático)
+    const savedSession = localStorage.getItem('ufinet_session');
+    if (savedSession) {
+        try {
+            const sessionUser = JSON.parse(savedSession);
+            profileSelect.value = sessionUser.role;
+            applyProfilePermissions();
+            
+            document.body.classList.remove('logged-out');
+            
+            userNameDisplay.textContent = sessionUser.name;
+            avatarLetters.textContent = sessionUser.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+            
+            const roleText = {
+                'coordenador': 'Coordenador (Admin)',
+                'noc': 'Analista NOC',
+                'rh': 'Analista de RH'
+            };
+            userRoleDisplay.textContent = roleText[sessionUser.role] || 'Operador';
+            
+            navigateToTab('view-dashboard');
+        } catch (e) {
+            console.error("Erro ao ler sessão persistente:", e);
+            localStorage.removeItem('ufinet_session');
+        }
+    } else {
+        document.body.classList.add('logged-out');
+    }
 });
