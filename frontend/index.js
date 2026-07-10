@@ -907,73 +907,45 @@ document.addEventListener('DOMContentLoaded', async () => {
             localStorage.setItem('ufinet_profiles', JSON.stringify(initialProfiles));
         }
 
-        // Seeding Inicial de Escala NOC (Julho 2026) - Executado apenas uma vez!
+        // Seeding Inicial de Escala NOC - Todos iniciam com Folga
         if (!isSeeded && (!localStorage.getItem('ufinet_shifts') || Object.keys(JSON.parse(localStorage.getItem('ufinet_shifts'))).length === 0)) {
-            const seedNocShifts = {
-              "Ericles Sousa": ["7h-16h", "7h-16h", "7h-16h", "7h-16h", "Folga", "Folga", "7h-16h", "7h-16h", "7h-16h", "7h-16h", "Folga", "7h-16h", "7h-16h"],
-              "Maxwel Dantas": ["Folga", "09h-21h", "Folga", "19h-7h", "Folga", "07h-19h", "Folga", "09h-21h", "Folga", "09h-21h", "Folga", "09h-21h", "Folga"],
-              "Cassia": ["09h-21h", "Folga", "09h-21h", "Folga", "07h-19h", "Folga", "09h-21h", "Folga", "09h-21h", "Folga", "07h-19h", "Folga", "09h-21h"],
-              "Emerson Silva": ["Atestado", "Atestado", "12h-21h", "12h-21h", "Folga", "13h-21h", "12h-21h", "12h-21h", "12h-21h", "12h-21h", "12h-21h", "12h-21h", "Folga"],
-              "Pedro": ["13h-22h", "13h-22h", "21h-07h", "Folga", "13h-21h", "Folga", "13h-22h", "13h-22h", "13h-22h", "13h-22h", "Folga", "13h-22h", "13h-22h"],
-              "Allan Martins": ["22h-07h", "22h-07h", "Folga", "Folga", "21h-07h", "21h-07h", "22h-07h", "22h-07h", "Folga", "Folga", "22h-07h", "22h-07h", "22h-07h"],
-              "Felipe Ribeiro": ["FÉRIAS", "FÉRIAS", "FÉRIAS", "FÉRIAS", "FÉRIAS", "FÉRIAS", "FÉRIAS", "FÉRIAS", "FÉRIAS", "FÉRIAS", "FÉRIAS", "FÉRIAS", "FÉRIAS"],
-              "Jorge Luiz": ["FÉRIAS", "FÉRIAS", "FÉRIAS", "FÉRIAS", "FÉRIAS", "Folga", "7h-16h", "7h-16h", "7h-16h", "7h-16h", "Folga", "7h-16h", "7h-16h"],
-              "Dariel Souza": ["7h-16h", "7h-16h", "7h-16h", "Folga", "7h-16h", "7h-16h", "Folga", "7h-16h", "7h-16h", "7h-16h", "7h-16h", "Folga", "Folga"],
-              "Eduardo Pereira": ["Folga", "09h-21h", "Folga", "07h-19h", "Folga", "09h-21h", "FÉRIAS", "FÉRIAS", "FÉRIAS", "FÉRIAS", "FÉRIAS", "FÉRIAS", "FÉRIAS"],
-              "Leandro": ["09h-21h", "Folga", "09h-21h", "Folga", "09h-21h", "Folga", "09h-21h", "Folga", "09h-21h", "Folga", "09h-21h", "Folga", "09h-21h"],
-              "Rodolfo Gomes": ["Folga", "15H - 00H", "15H - 00H", "13H - 22H", "Folga", "Folga", "15H - 00H", "13H - 22H", "15H - 00H", "13H - 22H", "15H - 00H", "Folga", "Folga"],
-              "Thiago Silva": ["22h-07h", "22h-07h", "22h-07h", "22h-07h", "Folga", "Folga", "22h-07h", "22h-07h", "Folga", "Folga", "22h-07h", "22h-07h", "22h-07h"],
-              "Juliano (RJ)": ["14h-22h", "Folga", "Folga", "14h-22h", "21h-07h", "21h-07h", "Folga", "22h-07h", "22h-07h", "22h-07h", "22h-07h", "Folga", "Folga"],
-              "Raphael (RJ) 22:00 ~ 07:48hs": ["14h ~ 22h", "9h ~ 18h", "9h ~ 18h", "14h ~ 22h", "Folga", "Folga", "22h-07:48h", "22h-07:48h", "Folga", "Folga", "22h-07:48h", "22h-07:48h", "22h-07:48h"],
-              "Breno (RJ) 12:12 ~ 22hs": ["14h ~ 22h", "9h ~ 18h", "9h ~ 18h", "14h ~ 22h", "Folga", "Folga", "12:12h-22h", "12:12h-22h", "Folga", "Folga", "12:12h-22h", "12:12h-22h", "12:12h-22h"]
-            };
-
             const initialShifts = {};
-            for (let name in seedNocShifts) {
-                const shiftList = seedNocShifts[name];
-                const username = nameToUsernameMap[name] || name;
-                shiftList.forEach((shift, index) => {
-                    const day = 7 + index;
-                    initialShifts[`${username}|2026|7|${day}`] = shift;
-                });
-            }
             localStorage.setItem('ufinet_shifts', JSON.stringify(initialShifts));
         }
 
-        // Seeding Inicial de Sobreaviso (Julho 2026) - Executado apenas uma vez!
+        // Seeding Inicial de Sobreaviso - Todos iniciam com Folga
         if (!isSeeded && (!localStorage.getItem('ufinet_sobreaviso') || Object.keys(JSON.parse(localStorage.getItem('ufinet_sobreaviso'))).length === 0)) {
-            const seedSobreShifts = {
-              "Bruno Landra": ["SOBREAVISO", "SOBREAVISO", "SOBREAVISO", "SOBREAVISO", "Folga", "Folga", "SOBREAVISO", "SOBREAVISO", "SOBREAVISO", "SOBREAVISO", "SOBREAVISO", "Folga", "Folga"],
-              "Eduardo Leite": ["FÉRIAS", "FÉRIAS", "FÉRIAS", "FÉRIAS", "FÉRIAS", "FÉRIAS", "FÉRIAS", "FÉRIAS", "FÉRIAS", "FÉRIAS", "FÉRIAS", "FÉRIAS", "FÉRIAS"]
-            };
-
             const initialSobre = {};
-            for (let name in seedSobreShifts) {
-                const shiftList = seedSobreShifts[name];
-                const username = nameToUsernameMap[name] || name;
-                shiftList.forEach((shift, index) => {
-                    const day = 7 + index;
-                    initialSobre[`${username}|2026|7|${day}`] = shift;
-                });
-            }
             localStorage.setItem('ufinet_sobreaviso', JSON.stringify(initialSobre));
         }
 
-        // Férias Iniciais
+        // Férias Iniciais - Vazio para preenchimento manual
         if (!isSeeded && !localStorage.getItem('ufinet_vacations')) {
-            const initialVacations = [
-                { id: 'row-vac-felipe', name: 'Felipe Ribeiro', period: '01/07/2026 a 30/07/2026', days: 30, status: 'Em Férias Ativas', month: '7', statusClass: 'status-ferias', approvedByAdmin: true },
-                { id: 'row-vac-eduardo-l', name: 'Eduardo Leite', period: '01/07/2026 a 30/07/2026', days: 30, status: 'Em Férias Ativas', month: '7', statusClass: 'status-ferias', approvedByAdmin: true },
-                { id: 'row-vac-eduardo-p', name: 'Eduardo Pereira', period: '13/07/2026 a 31/07/2026', days: 19, status: 'Aguardando Coordenador', month: '7', statusClass: 'status-importing', approvedByAdmin: null },
-                { id: 'row-vac-maxwel', name: 'Maxwel Dantas', period: '01/08/2026 a 15/08/2026', days: 15, status: 'Férias Aprovadas', month: '8', statusClass: 'status-ready', approvedByAdmin: true },
-                { id: 'row-vac-pedro', name: 'Pedro', period: '10/08/2026 a 24/08/2026', days: 15, status: 'Aguardando Coordenador', month: '8', statusClass: 'status-importing', approvedByAdmin: null },
-                { id: 'row-vac-bruno', name: 'Bruno Landra', period: '01/11/2026 a 30/11/2026', days: 30, status: 'Planejada', month: '11', statusClass: 'status-folga', approvedByAdmin: true }
-            ];
+            const initialVacations = [];
             localStorage.setItem('ufinet_vacations', JSON.stringify(initialVacations));
         }
     }
 
     async function loadAllDataAndRender() {
+        const isCleaned = localStorage.getItem('ufinet_db_cleaned_v2') === 'true';
+        if (!isCleaned) {
+            localStorage.removeItem('ufinet_shifts');
+            localStorage.removeItem('ufinet_sobreaviso');
+            localStorage.removeItem('ufinet_vacations');
+            if (supabaseClient) {
+                try {
+                    await supabaseClient.from('shifts').delete().neq('id', 0);
+                    await supabaseClient.from('sobreaviso').delete().neq('id', 0);
+                    await supabaseClient.from('vacations').delete().neq('id', '0');
+                } catch(e) {
+                    console.error("Erro ao limpar Supabase:", e);
+                }
+            }
+            localStorage.setItem('ufinet_db_cleaned_v2', 'true');
+            window.location.reload();
+            return;
+        }
+
         initDatabase();
 
         // 1. Carregar perfis
