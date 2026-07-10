@@ -613,6 +613,12 @@ body {
     background-color: #f0fdf4 !important; /* Verde suave */
 }
 
+.status-default-shift {
+    background-color: transparent !important;
+    color: #1e293b !important;
+    font-weight: 600 !important;
+}
+
 /* Efeito Hover nas linhas */
 .employee-row:hover td {
     filter: brightness(0.97);

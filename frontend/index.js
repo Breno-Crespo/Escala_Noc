@@ -296,11 +296,25 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (activeCell) {
                 const oldShift = activeCell.textContent.trim();
                 if (oldShift !== shift) {
+                    const hasSat = activeCell.classList.contains('col-weekend-sat');
+                    const hasSun = activeCell.classList.contains('col-weekend-sun');
+                    
                     activeCell.className = '';
+                    
                     if (profileSelect.value === 'coordenador') {
                         activeCell.classList.add('editable');
                     }
-                    const newClass = shiftClasses[shift] || 'status-folga';
+                    if (hasSat) activeCell.classList.add('col-weekend-sat');
+                    if (hasSun) activeCell.classList.add('col-weekend-sun');
+
+                    let newClass = 'status-default-shift';
+                    if (shift === 'Folga') {
+                        newClass = 'status-folga';
+                    } else if (shift === 'FÉRIAS') {
+                        newClass = 'status-ferias';
+                    } else if (shift === 'Atestado') {
+                        newClass = 'status-atestado';
+                    }
                     activeCell.classList.add(newClass);
                     activeCell.textContent = shift;
 
@@ -343,11 +357,24 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const oldShift = activeCell.textContent.trim();
         if (oldShift !== shift) {
+            const hasSat = activeCell.classList.contains('col-weekend-sat');
+            const hasSun = activeCell.classList.contains('col-weekend-sun');
+
             activeCell.className = '';
             if (profileSelect.value === 'coordenador') {
                 activeCell.classList.add('editable');
             }
-            const newClass = shiftClasses[shift] || 'status-folga';
+            if (hasSat) activeCell.classList.add('col-weekend-sat');
+            if (hasSun) activeCell.classList.add('col-weekend-sun');
+
+            let newClass = 'status-default-shift';
+            if (shift === 'Folga') {
+                newClass = 'status-folga';
+            } else if (shift === 'FÉRIAS') {
+                newClass = 'status-ferias';
+            } else if (shift === 'Atestado') {
+                newClass = 'status-atestado';
+            }
             activeCell.classList.add(newClass);
             activeCell.textContent = shift;
 
@@ -1440,7 +1467,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             td.textContent = shift;
-            td.className = shiftClasses[shift] || 'status-folga';
+            
+            let cellClass = 'status-default-shift';
+            if (shift === 'Folga') {
+                cellClass = 'status-folga';
+            } else if (shift === 'FÉRIAS') {
+                cellClass = 'status-ferias';
+            } else if (shift === 'Atestado') {
+                cellClass = 'status-atestado';
+            }
+            td.className = cellClass;
 
             const wdName = getWeekdayName(year, month, day);
             if (wdName === 'SÁB') {
