@@ -116,6 +116,21 @@ VALUES
     ('row-vac-bruno', 'Bruno Landra', '01/11/2026 a 30/11/2026', 30, 'Planejada', '11', 'status-folga', true)
 ON CONFLICT (id) DO NOTHING;
 
--- 6. Índices de Performance Compostos
+-- 6. Tabela de Logs de Auditoria
+CREATE TABLE IF NOT EXISTS public.audit_logs (
+    id SERIAL PRIMARY KEY,
+    operator_name TEXT NOT NULL,
+    employee_name TEXT NOT NULL,
+    shift_date TEXT NOT NULL,
+    old_value TEXT,
+    new_value TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+ALTER TABLE public.audit_logs ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Leitura pública de logs para auditoria" ON public.audit_logs FOR SELECT USING (true);
+CREATE POLICY "Escrita de logs para auditoria" ON public.audit_logs FOR INSERT WITH CHECK (true);
+
+-- 7. Índices de Performance Compostos
 CREATE INDEX IF NOT EXISTS idx_shifts_lookup ON public.shifts (year, month, employee_name);
 CREATE INDEX IF NOT EXISTS idx_sobreaviso_lookup ON public.sobreaviso (year, month, employee_name);

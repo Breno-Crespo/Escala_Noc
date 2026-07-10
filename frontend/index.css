@@ -1381,5 +1381,219 @@ body:not(.logged-out) #login-screen {
     background-color: #1d4ed8 !important;
 }
 
+/* ================= 1. TEMA ESCURO (DARK MODE) ================= */
+body.dark-theme {
+    --color-bg-app: #0b0f19;
+    --color-bg-card: #151f32;
+    --color-text-main: #f8fafc;
+    --color-text-muted: #94a3b8;
+    --color-border: #1e293b;
+}
+
+body.dark-theme {
+    color: var(--color-text-main);
+    background-color: var(--color-bg-app);
+}
+
+body.dark-theme .grid-card,
+body.dark-theme .filters-card,
+body.dark-theme .widget-card,
+body.dark-theme .card-header,
+body.dark-theme .top-header,
+body.dark-theme .login-card {
+    background-color: var(--color-bg-card) !important;
+    border-color: var(--color-border) !important;
+    color: var(--color-text-main) !important;
+}
+
+body.dark-theme .card-title,
+body.dark-theme .widget-title,
+body.dark-theme .metric-title,
+body.dark-theme .form-card-title,
+body.dark-theme label,
+body.dark-theme .col-employee,
+body.dark-theme td,
+body.dark-theme th {
+    color: var(--color-text-main) !important;
+}
+
+body.dark-theme .filter-select,
+body.dark-theme .filter-input {
+    background-color: #0b0f19 !important;
+    color: var(--color-text-main) !important;
+    border-color: var(--color-border) !important;
+}
+
+body.dark-theme td.col-weekend-sat {
+    background-color: rgba(249, 115, 22, 0.08) !important;
+}
+
+body.dark-theme td.col-weekend-sun {
+    background-color: rgba(16, 185, 129, 0.08) !important;
+}
+
+/* ================= 2. IMPRESSÃO (@MEDIA PRINT) ================= */
+@media print {
+    .sidebar, .top-header, .filters-card, .legend-container, .btn-submit-custom, .shift-popover, #toast-container, .popover-custom-input, #audit-logs-widget {
+        display: none !important;
+    }
+    .app-container {
+        display: block !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        height: auto !important;
+    }
+    main {
+        margin-left: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+    }
+    .grid-card {
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        padding: 0 !important;
+    }
+    .schedule-table {
+        font-size: 8px !important;
+        width: 100% !important;
+        border-collapse: collapse !important;
+    }
+    .schedule-table th, .schedule-table td {
+        padding: 4px 2px !important;
+        border: 1px solid #000000 !important;
+        color: #000000 !important;
+        background-color: transparent !important;
+    }
+    .col-employee {
+        font-size: 8px !important;
+        min-width: auto !important;
+    }
+}
+
+/* ================= 3. CALENDÁRIO INDIVIDUAL (OPERADOR) ================= */
+.calendar-day-card {
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    min-height: 90px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.calendar-day-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.calendar-day-number {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-text-muted);
+}
+
+.calendar-day-shift {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 6px;
+    border-radius: 4px;
+    text-align: center;
+    margin-top: 6px;
+}
+
+.calendar-day-today {
+    border: 2px solid var(--color-primary) !important;
+}
+
+.calendar-day-today .calendar-day-number {
+    color: var(--color-primary);
+}
+
+/* ================= 4. MODAL DE CONFIRMAÇÃO DE EXCLUSÃO ================= */
+.confirm-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(15, 23, 42, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    backdrop-filter: blur(4px);
+}
+
+.confirm-modal-card {
+    background-color: var(--color-bg-card);
+    border-radius: 12px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    width: 90%;
+    max-width: 400px;
+    padding: 24px;
+    border: 1px solid var(--color-border);
+    animation: modal-enter 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modal-enter {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.confirm-modal-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--color-text-main);
+    margin-bottom: 12px;
+}
+
+.confirm-modal-message {
+    font-size: 14px;
+    color: var(--color-text-muted);
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+
+.confirm-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.btn-confirm-secondary {
+    padding: 8px 16px;
+    background-color: #f1f5f9;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.btn-confirm-secondary:hover {
+    background-color: #e2e8f0;
+}
+
+.btn-confirm-danger {
+    padding: 8px 16px;
+    background-color: #ef4444;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.btn-confirm-danger:hover {
+    background-color: #dc2626;
+}
+
 
 

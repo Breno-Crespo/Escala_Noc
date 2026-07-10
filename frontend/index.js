@@ -36,6 +36,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         'view-manage-profiles': {
             title: 'Gerenciamento de Perfis e Colaboradores',
             subtitle: 'Área do Administrador para criação de acessos e equipes'
+        },
+        'view-minha-escala': {
+            title: 'Minha Escala',
+            subtitle: 'Calendário individual de turnos, folgas e sobreavisos'
         }
     };
 
@@ -94,6 +98,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Recarregar os dados para manter o dashboard sincronizado ao navegar!
         if (targetId === 'view-dashboard') {
             updateDashboardMetrics();
+        }
+        if (targetId === 'view-minha-escala') {
+            renderMinhaEscala();
         }
     }
 
@@ -232,7 +239,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                     };
                     userRoleDisplay.textContent = roleText[matched.role] || 'Operador';
 
-                    navigateToTab('view-dashboard');
+                    if (matched.role === 'coordenador') {
+                        navigateToTab('view-dashboard');
+                    } else {
+                        navigateToTab('view-minha-escala');
+                    }
                     showToast(`Bem-vindo, ${matched.name}! Acesso concedido.`, 'success');
                 } else {
                     showToast('Usuário ou senha incorretos! Tente novamente.', 'error');
@@ -453,6 +464,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     function applyProfilePermissions() {
         const activeProfile = profileSelect.value;
         closePopover();
+
+        const savedSession = JSON.parse(localStorage.getItem('ufinet_session'));
+        const operatorMenu = document.getElementById('menu-operator-agenda');
+        if (operatorMenu) {
+            if (savedSession && (savedSession.role === 'noc' || savedSession.role === 'rh')) {
+                operatorMenu.style.display = 'block';
+            } else {
+                operatorMenu.style.display = 'none';
+            }
+        }
         
         const currentShiftCells = document.querySelectorAll('.schedule-table tbody td:not(.col-employee):not([colspan])');
         
@@ -680,7 +701,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
 
-        // 3. Deletar do Supabase
+        // 3. Deletar perfil do Supabase (sempre executado)
         if (supabaseClient) {
             try {
                 const { error } = await supabaseClient.from('profiles').delete().eq('id', id);
@@ -697,11 +718,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             try {
                 const { data, error } = await supabaseClient.from(table).select('*');
                 if (!error && data) {
-                    const result = {};
+                    const mapped = {};
                     data.forEach(row => {
-                        result[`${row.employee_name}|${row.year}|${row.month}|${row.day}`] = row.shift;
+                        mapped[`${row.employee_name}|${row.year}|${row.month}|${row.day}`] = row.shift;
                     });
-                    return result;
+                    return mapped;
                 }
                 console.error(`Erro Supabase GetShifts (${table}):`, error);
             } catch (e) {
@@ -713,12 +734,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     async function dbSaveShift(isSobreaviso, employee_name, year, month, day, shift) {
+        const key = `${employee_name}|${year}|${month}|${day}`;
+        const db = isSobreaviso ? sobreavisoDatabase : shiftDatabase;
+        const oldShift = db[key] || 'Folga';
+
         if (isSobreaviso) {
-            sobreavisoDatabase[`${employee_name}|${year}|${month}|${day}`] = shift;
+            sobreavisoDatabase[key] = shift;
             localStorage.setItem('ufinet_sobreaviso', JSON.stringify(sobreavisoDatabase));
         } else {
-            shiftDatabase[`${employee_name}|${year}|${month}|${day}`] = shift;
+            shiftDatabase[key] = shift;
             localStorage.setItem('ufinet_shifts', JSON.stringify(shiftDatabase));
+        }
+
+        // Gravar log se houve alteração real
+        if (oldShift !== shift) {
+            const operatorSession = JSON.parse(localStorage.getItem('ufinet_session')) || { name: 'Sistema / Seeding' };
+            const typeText = isSobreaviso ? 'Sobreaviso' : 'Escala NOC';
+            const formattedDate = `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
+            await dbSaveAuditLog(operatorSession.name, `${employee_name} (${typeText})`, formattedDate, oldShift, shift);
         }
 
         const table = isSobreaviso ? 'sobreaviso' : 'shifts';
@@ -1026,7 +1059,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         profiles.forEach(prof => {
             // Ignora o coordenador e quem está fora da escala na rotação de turnos operacionais
             if (prof.oncall === 'nao' && prof.role !== 'coordenador') {
-                const key = `${prof.name}|${currentYear}|${currentMonth}|${currentDay}`;
+                const key = `${prof.username}|${currentYear}|${currentMonth}|${currentDay}`;
                 const shift = shiftDatabase[key] || getVacationOrShiftDefault(prof.name, currentYear, currentMonth, currentDay, false);
                 
                 if (shift !== 'Folga' && shift !== 'FÉRIAS') {
@@ -1060,7 +1093,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const atestadoNames = [];
             profiles.forEach(prof => {
                 if (prof.oncall === 'nao' && prof.role !== 'coordenador') {
-                    const key = `${prof.name}|${currentYear}|${currentMonth}|${currentDay}`;
+                    const key = `${prof.username}|${currentYear}|${currentMonth}|${currentDay}`;
                     const shift = shiftDatabase[key] || getVacationOrShiftDefault(prof.name, currentYear, currentMonth, currentDay, false);
                     if (shift === 'Atestado') {
                         atestadoNames.push(prof.name);
@@ -1095,7 +1128,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             profiles.forEach(prof => {
                 if (prof.oncall === 'nao' && prof.role !== 'coordenador') {
-                    const key = `${prof.name}|${fYear}|${fMonth}|${day}`;
+                    const key = `${prof.username}|${fYear}|${fMonth}|${day}`;
                     const shift = shiftDatabase[key] || getVacationOrShiftDefault(prof.name, fYear, fMonth, day, false);
                     if (shift !== 'Folga' && shift !== 'FÉRIAS') {
                         if (prof.team === 'n1') n1WorkingOnDay = true;
@@ -1160,7 +1193,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             profiles.forEach(prof => {
                 if (prof.oncall === 'nao' && prof.role !== 'coordenador') {
                     for (let day = 1; day <= daysCount; day++) {
-                        const key = `${prof.name}|${fYear}|${fMonth}|${day}`;
+                        const key = `${prof.username}|${fYear}|${fMonth}|${day}`;
                         const shift = shiftDatabase[key];
                         if (shift === 'Atestado') {
                             if (!atestadosThisMonth.some(a => a.name === prof.name && a.day === day)) {
@@ -1185,6 +1218,133 @@ document.addEventListener('DOMContentLoaded', async () => {
                 li.style.borderLeftColor = '#10b981';
                 li.innerHTML = `<strong>Tudo limpo!</strong> Nenhuma ausência ou férias ativas registradas para este mês.`;
                 alertsList.appendChild(li);
+            }
+        }
+
+        // 6. Alertas de Desfalque Operacional
+        const understaffingList = document.getElementById('understaffing-alerts-list');
+        if (understaffingList) {
+            understaffingList.innerHTML = '';
+            let desfalques = 0;
+            
+            for (let day = 1; day <= daysCount; day++) {
+                let n1Count = 0;
+                let torreCount = 0;
+                
+                profiles.forEach(prof => {
+                    if (prof.oncall === 'nao' && prof.role !== 'coordenador') {
+                        const key = `${prof.username}|${fYear}|${fMonth}|${day}`;
+                        const shift = shiftDatabase[key] || getVacationOrShiftDefault(prof.name, fYear, fMonth, day, false);
+                        
+                        if (shift !== 'Folga' && shift !== 'FÉRIAS' && shift !== 'Atestado') {
+                            if (prof.team === 'n1') n1Count++;
+                            if (prof.team === 'torre') torreCount++;
+                        }
+                    }
+                });
+                
+                const wdName = getWeekdayName(fYear, fMonth, day);
+                const dateLabel = `${day.toString().padStart(2, '0')}/${fMonth.toString().padStart(2, '0')} (${wdName})`;
+                
+                if (n1Count === 0) {
+                    desfalques++;
+                    const li = document.createElement('li');
+                    li.className = 'alert-list-item warning';
+                    li.innerHTML = `⚠️ Dia <strong>${dateLabel}</strong> sem operadores no setor <strong>N1</strong>!`;
+                    understaffingList.appendChild(li);
+                }
+                
+                if (torreCount === 0) {
+                    desfalques++;
+                    const li = document.createElement('li');
+                    li.className = 'alert-list-item warning';
+                    li.innerHTML = `⚠️ Dia <strong>${dateLabel}</strong> sem operadores no setor <strong>Torre</strong>!`;
+                    understaffingList.appendChild(li);
+                }
+            }
+            
+            if (desfalques === 0) {
+                const li = document.createElement('li');
+                li.className = 'alert-list-item info';
+                li.style.backgroundColor = '#ecfdf5';
+                li.style.borderLeftColor = '#10b981';
+                li.innerHTML = `<strong>Cobertura Ideal!</strong> Pelo menos 1 operador ativo em todos os setores e turnos.`;
+                understaffingList.appendChild(li);
+            }
+        }
+
+        // 7. Relatório de Equidade (Distribuição de Turnos de Final de Semana)
+        const equityBody = document.getElementById('equity-report-rows');
+        if (equityBody) {
+            equityBody.innerHTML = '';
+            
+            const stats = [];
+            profiles.forEach(prof => {
+                if (prof.oncall === 'nao' && prof.role !== 'coordenador') {
+                    let satsCount = 0;
+                    let sunsCount = 0;
+                    
+                    for (let day = 1; day <= daysCount; day++) {
+                        const key = `${prof.username}|${fYear}|${fMonth}|${day}`;
+                        const shift = shiftDatabase[key] || getVacationOrShiftDefault(prof.name, fYear, fMonth, day, false);
+                        
+                        if (shift !== 'Folga' && shift !== 'FÉRIAS' && shift !== 'Atestado') {
+                            const wdName = getWeekdayName(fYear, fMonth, day);
+                            if (wdName === 'SÁB') satsCount++;
+                            if (wdName === 'DOM') sunsCount++;
+                        }
+                    }
+                    
+                    stats.push({
+                        name: prof.name,
+                        sats: satsCount,
+                        suns: sunsCount,
+                        total: satsCount + sunsCount
+                    });
+                }
+            });
+            
+            stats.sort((a, b) => b.total - a.total);
+            
+            stats.forEach(st => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="text-align: left; padding: 8px; font-weight:700;">${st.name}</td>
+                    <td style="text-align: center; padding: 8px;">${st.sats}</td>
+                    <td style="text-align: center; padding: 8px;">${st.suns}</td>
+                    <td style="text-align: center; padding: 8px; font-weight:700; color: #f59e0b;">${st.total}</td>
+                `;
+                equityBody.appendChild(tr);
+            });
+        }
+
+        // 8. Histórico de Auditoria (Apenas se o coordenador estiver logado)
+        const activeUser = JSON.parse(localStorage.getItem('ufinet_session'));
+        if (activeUser && activeUser.role === 'coordenador') {
+            const auditWidget = document.getElementById('audit-logs-widget');
+            if (auditWidget) auditWidget.style.display = 'block';
+            
+            const auditBody = document.getElementById('audit-logs-rows');
+            if (auditBody) {
+                auditBody.innerHTML = '';
+                const logs = await dbGetAuditLogs();
+                if (logs && logs.length > 0) {
+                    logs.forEach(log => {
+                        const tr = document.createElement('tr');
+                        const logDate = new Date(log.created_at).toLocaleString('pt-BR');
+                        tr.innerHTML = `
+                            <td style="text-align:left; padding:6px;">${logDate}</td>
+                            <td style="text-align:left; padding:6px; font-weight:700;">${log.operator_name}</td>
+                            <td style="text-align:left; padding:6px;">${log.employee_name}</td>
+                            <td style="text-align:left; padding:6px;">${log.shift_date}</td>
+                            <td style="text-align:center; padding:6px;"><span class="card-tag status-folga" style="font-size:10px;">${log.old_value || 'Nulo'}</span></td>
+                            <td style="text-align:center; padding:6px;"><span class="card-tag status-ferias" style="font-size:10px; background-color:#dbeafe; color:#1e40af;">${log.new_value || 'Nulo'}</span></td>
+                        `;
+                        auditBody.appendChild(tr);
+                    });
+                } else {
+                    auditBody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:12px; color:#64748b;">Nenhuma alteração registrada.</td></tr>`;
+                }
             }
         }
     }
@@ -1741,6 +1901,36 @@ document.addEventListener('DOMContentLoaded', async () => {
                 showToast(`Perfil criado! ${name} adicionado às escalas de acordo.`, 'success');
             }
 
+            // Padrão de autogeração de escala se o perfil for NOC e participar da escala
+            const patternSelect = document.getElementById('prof-pattern');
+            const selectedPattern = patternSelect ? patternSelect.value : 'none';
+
+            if (selectedPattern !== 'none' && role === 'noc' && oncall !== 'fora') {
+                const fYear = parseInt(filterNocYear.value);
+                const fMonth = parseInt(filterNocMonth.value);
+                const daysInMonth = getDaysInMonth(fYear, fMonth);
+
+                for (let d = 1; d <= daysInMonth; d++) {
+                    let fillShift = 'Folga';
+                    if (selectedPattern === '5x2_adm') {
+                        const wd = getWeekdayName(fYear, fMonth, d);
+                        if (wd !== 'SÁB' && wd !== 'DOM') {
+                            fillShift = '07h-16h';
+                        }
+                    } else if (selectedPattern === '12x36_dia') {
+                        if (d % 2 !== 0) {
+                            fillShift = '07h-19h';
+                        }
+                    } else if (selectedPattern === '12x36_noite') {
+                        if (d % 2 !== 0) {
+                            fillShift = '19h-07h';
+                        }
+                    }
+                    await dbSaveShift(false, username, fYear, fMonth, d, fillShift);
+                }
+                showToast(`Escala do colaborador preenchida automaticamente!`, 'info');
+            }
+
             profileForm.reset();
             if (containerProfOncall) containerProfOncall.style.display = 'flex';
             await renderProfilesList();
@@ -1864,6 +2054,194 @@ document.addEventListener('DOMContentLoaded', async () => {
         }, 3000);
     }
 
+    // ================= CUSTOM CONFIRMATION OVERLAY DIALOG =================
+    function customConfirm(message, onConfirm) {
+        const modal = document.getElementById('confirm-modal');
+        const msgEl = document.getElementById('confirm-modal-msg');
+        const btnOk = document.getElementById('btn-confirm-ok');
+        const btnCancel = document.getElementById('btn-confirm-cancel');
+
+        if (!modal || !msgEl || !btnOk || !btnCancel) {
+            if (confirm(message)) onConfirm();
+            return;
+        }
+
+        msgEl.textContent = message;
+        modal.style.display = 'flex';
+
+        const cleanUp = () => {
+            modal.style.display = 'none';
+            btnOk.removeEventListener('click', handleOk);
+            btnCancel.removeEventListener('click', handleCancel);
+        };
+
+        const handleOk = () => {
+            cleanUp();
+            onConfirm();
+        };
+
+        const handleCancel = () => {
+            cleanUp();
+        };
+
+        btnOk.addEventListener('click', handleOk);
+        btnCancel.addEventListener('click', handleCancel);
+    }
+
+    // ================= MINHA ESCALA: CALENDÁRIO INDIVIDUAL (OPERADOR) =================
+    function renderMinhaEscala() {
+        const grid = document.getElementById('minha-escala-grid');
+        const title = document.getElementById('minha-escala-title');
+        const selMonthSelect = document.getElementById('minha-escala-month');
+        const selYearSelect = document.getElementById('minha-escala-year');
+        const sessionUser = JSON.parse(localStorage.getItem('ufinet_session'));
+
+        if (!grid || !title || !selMonthSelect || !selYearSelect || !sessionUser) return;
+
+        const year = parseInt(selYearSelect.value);
+        const month = parseInt(selMonthSelect.value);
+        const selectedMonthName = monthNames[month - 1];
+
+        title.textContent = `Escala de ${sessionUser.name} em ${selectedMonthName} ${year}`;
+        grid.innerHTML = '';
+
+        const firstDayOfWeek = new Date(year, month - 1, 1).getDay();
+        const daysInMonth = getDaysInMonth(year, month);
+
+        // Dias vazios
+        for (let i = 0; i < firstDayOfWeek; i++) {
+            const emptyCell = document.createElement('div');
+            emptyCell.style.minHeight = '90px';
+            grid.appendChild(emptyCell);
+        }
+
+        const today = new Date();
+        const isCurrentMonthYear = today.getFullYear() === year && (today.getMonth() + 1) === month;
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            const card = document.createElement('div');
+            card.className = 'calendar-day-card';
+            
+            const wdName = getWeekdayName(year, month, day);
+            if (wdName === 'SÁB') card.classList.add('col-weekend-sat');
+            if (wdName === 'DOM') card.classList.add('col-weekend-sun');
+
+            if (isCurrentMonthYear && today.getDate() === day) {
+                card.classList.add('calendar-day-today');
+            }
+
+            const numEl = document.createElement('span');
+            numEl.className = 'calendar-day-number';
+            numEl.textContent = `${day.toString().padStart(2, '0')} (${wdName})`;
+            card.appendChild(numEl);
+
+            const key = `${sessionUser.username}|${year}|${month}|${day}`;
+            let shift = shiftDatabase[key] || getVacationOrShiftDefault(sessionUser.name, year, month, day, false);
+            
+            const hasSobreaviso = sobreavisoDatabase[key];
+            if (hasSobreaviso && hasSobreaviso !== 'Folga') {
+                shift = `${shift} + Sobreaviso: ${hasSobreaviso}`;
+            }
+
+            const shiftEl = document.createElement('div');
+            shiftEl.className = 'calendar-day-shift';
+            shiftEl.textContent = shift || 'Folga';
+
+            let cellClass = 'status-folga';
+            if (shift === 'FÉRIAS') cellClass = 'status-ferias';
+            else if (shift === 'Atestado') cellClass = 'status-atestado';
+            else if (shift && shift !== 'Folga') cellClass = 'status-default-shift';
+
+            shiftEl.classList.add(cellClass);
+            card.appendChild(shiftEl);
+            grid.appendChild(card);
+        }
+    }
+
+    const minMonthSelect = document.getElementById('minha-escala-month');
+    const minYearSelect = document.getElementById('minha-escala-year');
+    if (minMonthSelect) minMonthSelect.addEventListener('change', renderMinhaEscala);
+    if (minYearSelect) minYearSelect.addEventListener('change', renderMinhaEscala);
+
+    // ================= ALTERNADOR DE TEMA (DARK / LIGHT MODE) =================
+    const btnThemeToggle = document.getElementById('btn-theme-toggle');
+    const themeIcon = document.getElementById('theme-toggle-icon');
+    const themeText = document.getElementById('theme-toggle-text');
+
+    function applyTheme(theme) {
+        if (theme === 'dark') {
+            document.body.classList.add('dark-theme');
+            if (themeText) themeText.textContent = 'Modo Claro';
+            if (themeIcon) {
+                themeIcon.innerHTML = `<path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10z"/>`;
+            }
+        } else {
+            document.body.classList.remove('dark-theme');
+            if (themeText) themeText.textContent = 'Modo Escuro';
+            if (themeIcon) {
+                themeIcon.innerHTML = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>`;
+            }
+        }
+        localStorage.setItem('ufinet_theme', theme);
+    }
+
+    if (btnThemeToggle) {
+        btnThemeToggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            const isDark = document.body.classList.contains('dark-theme');
+            applyTheme(isDark ? 'light' : 'dark');
+            showToast(`Tema visual alterado com sucesso!`, 'info');
+        });
+    }
+
+    // Carregar tema salvo
+    const savedTheme = localStorage.getItem('ufinet_theme') || 'light';
+    applyTheme(savedTheme);
+
+    // ================= EXPORTADORES (PDF / CSV) =================
+    const btnExportPdf = document.getElementById('btn-export-pdf');
+    if (btnExportPdf) {
+        btnExportPdf.addEventListener('click', () => {
+            window.print();
+        });
+    }
+
+    const btnExportCsv = document.getElementById('btn-export-csv');
+    if (btnExportCsv) {
+        btnExportCsv.addEventListener('click', () => {
+            const year = filterNocYear.value;
+            const month = filterNocMonth.value;
+            const daysCount = new Date(year, month, 0).getDate();
+            
+            let csvContent = "Colaborador;";
+            for (let d = 1; d <= daysCount; d++) {
+                csvContent += `${d}/${month};`;
+            }
+            csvContent += "\n";
+            
+            const rows = document.querySelectorAll('#turnos-noc-tbody .employee-row');
+            rows.forEach(row => {
+                const name = row.querySelector('.col-employee').textContent.split('(')[0].trim();
+                csvContent += `"${name}";`;
+                const cells = Array.from(row.querySelectorAll('td')).slice(1);
+                cells.forEach(cell => {
+                    csvContent += `"${cell.textContent.trim()}";`;
+                });
+                csvContent += "\n";
+            });
+            
+            const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", `Escala_NOC_${month}_${year}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast('Arquivo CSV exportado com sucesso!', 'success');
+        });
+    }
+
     // ================= INICIALIZAÇÃO DO SISTEMA =================
     // 1. Carregar arquivo config.js e configurar cliente Supabase Cloud
     await configureSupabase();
@@ -1894,7 +2272,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             };
             userRoleDisplay.textContent = roleText[sessionUser.role] || 'Operador';
             
-            navigateToTab('view-dashboard');
+            if (sessionUser.role === 'coordenador') {
+                navigateToTab('view-dashboard');
+            } else {
+                navigateToTab('view-minha-escala');
+            }
         } catch (e) {
             console.error("Erro ao ler sessão persistente:", e);
             localStorage.removeItem('ufinet_session');
