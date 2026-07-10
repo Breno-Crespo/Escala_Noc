@@ -329,9 +329,68 @@ document.addEventListener('DOMContentLoaded', async () => {
         popoverOptions.appendChild(btn);
     });
 
+    // ================= HORÁRIO PERSONALIZADO DO POPOVER =================
+    const btnSaveCustomShift = document.getElementById('btn-save-custom-shift');
+    const customShiftInput = document.getElementById('custom-shift-input');
+
+    async function saveCustomShift(shift) {
+        if (!activeCell) return;
+        shift = shift.trim();
+        if (!shift) {
+            showToast('Por favor, digite um turno válido!', 'error');
+            return;
+        }
+
+        const oldShift = activeCell.textContent.trim();
+        if (oldShift !== shift) {
+            activeCell.className = '';
+            if (profileSelect.value === 'coordenador') {
+                activeCell.classList.add('editable');
+            }
+            const newClass = shiftClasses[shift] || 'status-folga';
+            activeCell.classList.add(newClass);
+            activeCell.textContent = shift;
+
+            const name = activeCell.parentElement.querySelector('.col-employee').textContent.split('(')[0].trim();
+            const isSobre = activeCell.closest('#view-sobreaviso') !== null;
+            const cells = Array.from(activeCell.parentElement.children);
+            const day = cells.indexOf(activeCell);
+
+            if (isSobre) {
+                const year = parseInt(filterSobreYear.value);
+                const month = parseInt(filterSobreMonth.value);
+                await dbSaveShift(true, name, year, month, day, shift);
+            } else {
+                const year = parseInt(filterNocYear.value);
+                const month = parseInt(filterNocMonth.value);
+                await dbSaveShift(false, name, year, month, day, shift);
+            }
+            
+            showToast(`Turno de ${name} alterado para: ${shift}`, 'success');
+            updateDashboardMetrics();
+        }
+        closePopover();
+    }
+
+    if (btnSaveCustomShift && customShiftInput) {
+        btnSaveCustomShift.addEventListener('click', (e) => {
+            e.stopPropagation();
+            saveCustomShift(customShiftInput.value);
+        });
+
+        customShiftInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                e.stopPropagation();
+                saveCustomShift(customShiftInput.value);
+            }
+        });
+    }
+
     function closePopover() {
         if (popover) popover.style.display = 'none';
         activeCell = null;
+        if (customShiftInput) customShiftInput.value = '';
     }
 
     function applyProfilePermissions() {
@@ -430,6 +489,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
 
+        if (customShiftInput) {
+            customShiftInput.value = cell.textContent.trim();
+        }
+
         const rect = cell.getBoundingClientRect();
         popover.style.display = 'block';
         
@@ -438,7 +501,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         popover.style.top = `${top}px`;
         
-        const popoverWidth = 180;
+        const popoverWidth = 220;
         if (left + popoverWidth > window.innerWidth) {
             popover.style.left = `${rect.right - popoverWidth}px`;
         } else {

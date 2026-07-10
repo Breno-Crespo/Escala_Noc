@@ -937,7 +937,7 @@ body {
     border-radius: 8px;
     box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
     z-index: 1000;
-    width: 180px;
+    width: 220px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -1382,6 +1382,15 @@ body:not(.logged-out) #login-screen {
     background-color: #2563eb !important; /* Azul escuro proeminente */
     color: #ffffff !important;
     font-weight: 700 !important;
+}
+
+#custom-shift-input:focus {
+    border-color: #2563eb !important;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15) !important;
+}
+
+#btn-save-custom-shift:hover {
+    background-color: #1d4ed8 !important;
 }
 
 

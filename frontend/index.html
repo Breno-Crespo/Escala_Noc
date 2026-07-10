@@ -522,6 +522,16 @@
     <!-- Popover de Seleção de Turno -->
     <div id="shift-popover" class="shift-popover" style="display: none;">
         <div class="popover-header">Selecionar Turno</div>
+        
+        <!-- Campo para horário personalizado -->
+        <div class="popover-custom-input" style="padding: 10px; border-bottom: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 6px;">
+            <label style="font-size: 9px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px;">Horário Personalizado</label>
+            <div style="display: flex; gap: 6px; width: 100%;">
+                <input type="text" id="custom-shift-input" placeholder="Ex: 08h-17h, Falta, etc." style="flex-grow: 1; min-width: 0; padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 11px; outline: none; transition: border-color 0.15s ease;">
+                <button id="btn-save-custom-shift" style="padding: 6px 10px; background-color: #2563eb; color: white; border: none; border-radius: 4px; font-size: 11px; font-weight: 700; cursor: pointer; transition: background 0.15s ease; white-space: nowrap;">Ok</button>
+            </div>
+        </div>
+        
         <div class="popover-options"></div>
     </div>
 
