@@ -575,44 +575,23 @@ body {
 }
 
 /* Cores dos Blocos de Turnos (Totalmente Preenchidos) */
-.status-9h18h {
-    background-color: #cbd5e1 !important; /* Cinza supervisor */
-    color: #334155 !important;
+/* Cores dos Blocos de Turnos (Totalmente Limpos) */
+.status-9h18h,
+.status-7h16h,
+.status-9h21h,
+.status-7h19h,
+.status-12h21h,
+.status-13h22h,
+.status-22h07h,
+.status-15h00h,
+.status-sobreaviso {
+    background-color: transparent !important;
+    color: #1e293b !important;
 }
 
-.status-7h16h {
-    background-color: #fbcfe8 !important; /* Rosa */
-    color: #831843 !important;
-}
-
-.status-9h21h {
-    background-color: #2563eb !important; /* Azul escuro */
-    color: #ffffff !important;
-}
-
-.status-7h19h {
-    background-color: #7dd3fc !important; /* Azul claro / celeste */
-    color: #0369a1 !important;
-}
-
-.status-atestado {
-    background-color: #ccfbf1 !important; /* Atestado */
-    color: #0f766e !important;
-}
-
-.status-12h21h {
-    background-color: #93c5fd !important; /* Médio azul */
-    color: #1e3a8a !important;
-}
-
-.status-13h22h {
-    background-color: #fed7aa !important; /* Laranja suave */
-    color: #7c2d12 !important;
-}
-
-.status-22h07h {
-    background-color: #a7f3d0 !important; /* Verde folha/escuro */
-    color: #064e3b !important;
+.status-folga {
+    background-color: transparent !important;
+    color: #94a3b8 !important;
 }
 
 .status-ferias {
@@ -620,15 +599,18 @@ body {
     color: #ffffff !important;
 }
 
-.status-folga {
-    background-color: #ffffff !important; /* Branco / Folga limpa */
-    color: #94a3b8 !important;
-    border: 1px solid #f1f5f9 !important;
+.status-atestado {
+    background-color: #ccfbf1 !important; /* Atestado */
+    color: #0f766e !important;
 }
 
-.status-15h00h {
-    background-color: #fef08a !important; /* Amarelo */
-    color: #713f12 !important;
+/* Cores de Finais de Semana (Fundo das colunas de Sábados e Domingos nas linhas) */
+.employee-row td.col-weekend-sat {
+    background-color: #fff7ed !important; /* Laranja suave */
+}
+
+.employee-row td.col-weekend-sun {
+    background-color: #f0fdf4 !important; /* Verde suave */
 }
 
 /* Efeito Hover nas linhas */

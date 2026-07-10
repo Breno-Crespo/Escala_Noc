@@ -1442,6 +1442,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             td.textContent = shift;
             td.className = shiftClasses[shift] || 'status-folga';
 
+            const wdName = getWeekdayName(year, month, day);
+            if (wdName === 'SÁB') {
+                td.classList.add('col-weekend-sat');
+            } else if (wdName === 'DOM') {
+                td.classList.add('col-weekend-sun');
+            }
+
             if (profileSelect.value === 'coordenador') {
                 td.classList.add('editable');
             }
