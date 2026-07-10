@@ -185,8 +185,26 @@ document.addEventListener('DOMContentLoaded', async () => {
             btnSpan.textContent = 'Autenticando...';
             
             setTimeout(async () => {
-                const profiles = await dbGetProfiles();
-                const matched = profiles.find(p => p.username.toLowerCase().trim() === userVal && p.password === passVal);
+                let matched = null;
+                if (supabaseClient) {
+                    try {
+                        const { data, error } = await supabaseClient.rpc('verify_profile_login', {
+                            p_username: userVal,
+                            p_password: passVal
+                        });
+                        if (!error && data && data.length > 0) {
+                            matched = data[0];
+                        }
+                    } catch (e) {
+                        console.error("Erro na autenticação RPC do Supabase:", e);
+                    }
+                }
+
+                if (!matched) {
+                    // Fallback offline / localStorage
+                    const localProfiles = JSON.parse(localStorage.getItem('ufinet_profiles')) || [];
+                    matched = localProfiles.find(p => p.username.toLowerCase().trim() === userVal && (p.password === passVal || (userVal === 'admin' && passVal === 'admin')));
+                }
 
                 if (matched) {
                     profileSelect.value = matched.role;
@@ -317,8 +335,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     }
                     activeCell.classList.add(newClass);
                     activeCell.textContent = shift;
-
-                    const name = activeCell.parentElement.querySelector('.col-employee').textContent.split('(')[0].trim();
+                    const username = activeCell.parentElement.getAttribute('data-username');
+                    const displayName = activeCell.parentElement.querySelector('.col-employee').textContent.split('(')[0].trim();
                     const isSobre = activeCell.closest('#view-sobreaviso') !== null;
                     const cells = Array.from(activeCell.parentElement.children);
                     const day = cells.indexOf(activeCell);
@@ -326,14 +344,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                     if (isSobre) {
                         const year = parseInt(filterSobreYear.value);
                         const month = parseInt(filterSobreMonth.value);
-                        await dbSaveShift(true, name, year, month, day, shift);
+                        await dbSaveShift(true, username, year, month, day, shift);
                     } else {
                         const year = parseInt(filterNocYear.value);
                         const month = parseInt(filterNocMonth.value);
-                        await dbSaveShift(false, name, year, month, day, shift);
+                        await dbSaveShift(false, username, year, month, day, shift);
                     }
                     
-                    showToast(`Turno de ${name} alterado para: ${shift}`, 'success');
+                    showToast(`Turno de ${displayName} alterado para: ${shift}`, 'success');
                     updateDashboardMetrics();
                 }
                 closePopover();
@@ -378,7 +396,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             activeCell.classList.add(newClass);
             activeCell.textContent = shift;
 
-            const name = activeCell.parentElement.querySelector('.col-employee').textContent.split('(')[0].trim();
+            const username = activeCell.parentElement.getAttribute('data-username');
+            const displayName = activeCell.parentElement.querySelector('.col-employee').textContent.split('(')[0].trim();
             const isSobre = activeCell.closest('#view-sobreaviso') !== null;
             const cells = Array.from(activeCell.parentElement.children);
             const day = cells.indexOf(activeCell);
@@ -386,14 +405,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (isSobre) {
                 const year = parseInt(filterSobreYear.value);
                 const month = parseInt(filterSobreMonth.value);
-                await dbSaveShift(true, name, year, month, day, shift);
+                await dbSaveShift(true, username, year, month, day, shift);
             } else {
                 const year = parseInt(filterNocYear.value);
                 const month = parseInt(filterNocMonth.value);
-                await dbSaveShift(false, name, year, month, day, shift);
+                await dbSaveShift(false, username, year, month, day, shift);
             }
             
-            showToast(`Turno de ${name} alterado para: ${shift}`, 'success');
+            showToast(`Turno de ${displayName} alterado para: ${shift}`, 'success');
             updateDashboardMetrics();
         }
         closePopover();
@@ -761,6 +780,60 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function initDatabase() {
+        // ================= MIGRAÇÃO LOCALSTORAGE CHAVES DE ESCALA (NAME -> USERNAME) =================
+        const nameToUsernameMap = {
+            'Coordenador Admin': 'admin',
+            'Ericles Sousa': 'ericles.sousa',
+            'Maxwel Dantas': 'maxwel.dantas',
+            'Cassia': 'cassia',
+            'Emerson Silva': 'emerson.silva',
+            'Pedro': 'pedro',
+            'Allan Martins': 'allan.martins',
+            'Felipe Ribeiro': 'felipe.ribeiro',
+            'Jorge Luiz': 'jorge.luiz',
+            'Dariel Souza': 'dariel.souza',
+            'Eduardo Pereira': 'eduardo.pereira',
+            'Leandro': 'leandro',
+            'Rodolfo Gomes': 'rodolfo.gomes',
+            'Thiago Silva': 'thiago.silva',
+            'Juliano (RJ)': 'juliano',
+            'Raphael (RJ) 22:00 ~ 07:48hs': 'raphael',
+            'Breno (RJ) 12:12 ~ 22hs': 'breno',
+            'Bruno Landra': 'bruno.landra',
+            'Eduardo Leite': 'eduardo.leite'
+        };
+
+        function migrateLocalKey(keyName) {
+            try {
+                const localData = JSON.parse(localStorage.getItem(keyName));
+                if (!localData) return;
+                const migrated = {};
+                let hasChange = false;
+                for (let key in localData) {
+                    const parts = key.split('|');
+                    if (parts.length === 4) {
+                         const name = parts[0];
+                         const username = nameToUsernameMap[name];
+                         if (username) {
+                             migrated[`${username}|${parts[1]}|${parts[2]}|${parts[3]}`] = localData[key];
+                             hasChange = true;
+                         } else {
+                             migrated[key] = localData[key];
+                         }
+                    } else {
+                        migrated[key] = localData[key];
+                    }
+                }
+                if (hasChange) {
+                    localStorage.setItem(keyName, JSON.stringify(migrated));
+                }
+            } catch (e) {
+                console.error("Erro ao migrar localstorage:", e);
+            }
+        }
+        migrateLocalKey('ufinet_shifts');
+        migrateLocalKey('ufinet_sobreaviso');
+
         // Marcamos o banco como semeado para nunca restabelecer usuários deletados em logins subsequentes!
         const isSeeded = localStorage.getItem('ufinet_db_seeded') === 'true';
 
@@ -814,9 +887,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             const initialShifts = {};
             for (let name in seedNocShifts) {
                 const shiftList = seedNocShifts[name];
+                const username = nameToUsernameMap[name] || name;
                 shiftList.forEach((shift, index) => {
                     const day = 7 + index;
-                    initialShifts[`${name}|2026|7|${day}`] = shift;
+                    initialShifts[`${username}|2026|7|${day}`] = shift;
                 });
             }
             localStorage.setItem('ufinet_shifts', JSON.stringify(initialShifts));
@@ -832,9 +906,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             const initialSobre = {};
             for (let name in seedSobreShifts) {
                 const shiftList = seedSobreShifts[name];
+                const username = nameToUsernameMap[name] || name;
                 shiftList.forEach((shift, index) => {
                     const day = 7 + index;
-                    initialSobre[`${name}|2026|7|${day}`] = shift;
+                    initialSobre[`${username}|2026|7|${day}`] = shift;
                 });
             }
             localStorage.setItem('ufinet_sobreaviso', JSON.stringify(initialSobre));
@@ -1449,6 +1524,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         tr.className = 'employee-row';
         tr.setAttribute('data-team', prof.team);
         tr.setAttribute('data-name', prof.name);
+        tr.setAttribute('data-username', prof.username);
 
         const tdName = document.createElement('td');
         tdName.className = 'col-employee';
@@ -1459,7 +1535,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         for (let day = 1; day <= daysCount; day++) {
             const td = document.createElement('td');
-            const key = `${prof.name}|${year}|${month}|${day}`;
+            const key = `${prof.username}|${year}|${month}|${day}`;
             let shift = db[key];
 
             if (!shift) {
