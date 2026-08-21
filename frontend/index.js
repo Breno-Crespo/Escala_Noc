@@ -582,17 +582,27 @@ document.addEventListener('DOMContentLoaded', async () => {
         const rect = cell.getBoundingClientRect();
         popover.style.display = 'block';
         
-        const top = rect.bottom;
-        const left = rect.left;
+        const popoverHeight = popover.offsetHeight || 320;
+        const popoverWidth = popover.offsetWidth || 220;
+        
+        let top = rect.bottom;
+        if (top + popoverHeight > window.innerHeight) {
+            top = rect.top - popoverHeight;
+            if (top < 0) {
+                top = 10;
+            }
+        }
+        
+        let left = rect.left;
+        if (left + popoverWidth > window.innerWidth) {
+            left = rect.right - popoverWidth;
+        }
+        if (left < 0) {
+            left = 10;
+        }
         
         popover.style.top = `${top}px`;
-        
-        const popoverWidth = 220;
-        if (left + popoverWidth > window.innerWidth) {
-            popover.style.left = `${rect.right - popoverWidth}px`;
-        } else {
-            popover.style.left = `${left}px`;
-        }
+        popover.style.left = `${left}px`;
     });
 
     document.addEventListener('dblclick', (e) => {
