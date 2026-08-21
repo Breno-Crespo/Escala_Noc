@@ -574,34 +574,71 @@ body {
     height: auto !important;
 }
 
-/* Cores dos Blocos de Turnos (Totalmente Preenchidos) */
-/* Cores dos Blocos de Turnos (Totalmente Limpos) */
-.status-9h18h,
-.status-7h16h,
-.status-9h21h,
-.status-7h19h,
-.status-12h21h,
-.status-13h22h,
-.status-22h07h,
-.status-15h00h,
-.status-sobreaviso {
-    background-color: transparent !important;
+/* Cores dos Blocos de Turnos (Estilo Planilha Excel) */
+.status-7h-16h {
+    background-color: #fbcfe8 !important; /* Rosa suave */
+    color: #831843 !important;
+    font-weight: 600 !important;
+}
+
+.status-09h-18h {
+    background-color: #bfdbfe !important; /* Azul claro */
+    color: #1e3a8a !important;
+    font-weight: 600 !important;
+}
+
+.status-blue-shift {
+    background-color: #3b82f6 !important; /* Azul médio */
+    color: #ffffff !important;
+    font-weight: 600 !important;
+}
+
+.status-yellow-shift {
+    background-color: #fef08a !important; /* Amarelo */
+    color: #713f12 !important;
+    font-weight: 600 !important;
+}
+
+.status-orange-shift {
+    background-color: #fed7aa !important; /* Laranja */
+    color: #7c2d12 !important;
+    font-weight: 600 !important;
+}
+
+.status-green-shift {
+    background-color: #86efac !important; /* Verde */
+    color: #064e3b !important;
+    font-weight: 600 !important;
+}
+
+.status-gray-shift {
+    background-color: #e2e8f0 !important; /* Cinza */
     color: #1e293b !important;
+    font-weight: 600 !important;
 }
 
 .status-folga {
-    background-color: transparent !important;
-    color: #94a3b8 !important;
+    background-color: #dcfce7 !important; /* Verde Folga */
+    color: #166534 !important;
+    font-weight: normal !important;
 }
 
 .status-ferias {
     background-color: #c084fc !important; /* Roxo */
     color: #ffffff !important;
+    font-weight: 600 !important;
 }
 
 .status-atestado {
     background-color: #ccfbf1 !important; /* Atestado */
     color: #0f766e !important;
+    font-weight: 600 !important;
+}
+
+.status-sobreaviso {
+    background-color: #bbf7d0 !important;
+    color: #166534 !important;
+    font-weight: 600 !important;
 }
 
 /* Cores de Finais de Semana (Fundo das colunas de Sábados e Domingos nas linhas) */
