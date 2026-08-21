@@ -945,7 +945,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     async function loadAllDataAndRender() {
-        const isCleaned = localStorage.getItem('ufinet_db_cleaned_v4') === 'true';
+        const isCleaned = localStorage.getItem('ufinet_db_cleaned_v6') === 'true';
         if (!isCleaned) {
             localStorage.removeItem('ufinet_profiles');
             localStorage.removeItem('ufinet_shifts');
@@ -1022,10 +1022,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                     await supabaseClient.from('shifts').delete().neq('id', 0);
                     await supabaseClient.from('sobreaviso').delete().neq('id', 0);
                     await supabaseClient.from('vacations').delete().neq('id', '0');
-                    await supabaseClient.from('profiles').delete().neq('id', '0');
 
-                    // Bulk insert profiles
-                    await supabaseClient.from('profiles').insert(initialProfiles);
+                    const { data: existingProfs } = await supabaseClient.from('profiles').select('id');
+                    if (!existingProfs || existingProfs.length <= 1) {
+                        await supabaseClient.from('profiles').delete().neq('id', '0');
+                        await supabaseClient.from('profiles').insert(initialProfiles);
+                    }
 
                     // Build and bulk insert shifts in chunks of 500
                     const shiftsToInsert = [];
@@ -1036,7 +1038,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             year: parseInt(year),
                             month: parseInt(month),
                             day: parseInt(day),
-                            shift_value: newShiftsData[key]
+                            shift: newShiftsData[key]
                         });
                     }
 
@@ -1049,7 +1051,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             }
 
-            localStorage.setItem('ufinet_db_cleaned_v5', 'true');
+            localStorage.setItem('ufinet_db_cleaned_v6', 'true');
             window.location.reload();
             return;
         }
