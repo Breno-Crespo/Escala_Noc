@@ -945,7 +945,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     async function loadAllDataAndRender() {
-        const isCleaned = localStorage.getItem('ufinet_db_cleaned_v3') === 'true';
+        const isCleaned = localStorage.getItem('ufinet_db_cleaned_v4') === 'true';
         if (!isCleaned) {
             localStorage.removeItem('ufinet_profiles');
             localStorage.removeItem('ufinet_shifts');
@@ -964,15 +964,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                 { id: 'profile-allan', name: 'Allan Martins', username: 'allan.martins', role: 'noc', team: 'n1', oncall: 'nao', password: 'admin' },
                 { id: 'profile-felipe', name: 'Felipe Ribeiro', username: 'felipe.ribeiro', role: 'noc', team: 'n1', oncall: 'nao', password: 'admin' },
                 { id: 'profile-jorge', name: 'Jorge Luiz', username: 'jorge.luiz', role: 'noc', team: 'torre', oncall: 'nao', password: 'admin' },
-                { id: 'profile-dariel', name: 'Dariel Souza', username: 'dariel.souza', role: 'noc', team: 'torre', oncall: 'nao', password: 'admin' },
+                { id: 'profile-dariel', name: 'Dariel Souza', username: 'dariel.sousa', role: 'noc', team: 'torre', oncall: 'nao', password: 'admin' },
                 { id: 'profile-leandro', name: 'Leandro', username: 'leandro', role: 'noc', team: 'torre', oncall: 'nao', password: 'admin' },
                 { id: 'profile-eduardop', name: 'Eduardo Pereira', username: 'eduardo.pereira', role: 'noc', team: 'torre', oncall: 'nao', password: 'admin' },
                 { id: 'profile-rodolfo', name: 'Rodolfo Gomes', username: 'rodolfo.gomes', role: 'noc', team: 'torre', oncall: 'nao', password: 'admin' },
                 { id: 'profile-breno', name: 'Breno', username: 'breno', role: 'noc', team: 'torre', oncall: 'nao', password: 'admin' },
                 { id: 'profile-raphael', name: 'Raphael (RJ)', username: 'raphael', role: 'noc', team: 'torre', oncall: 'nao', password: 'admin' },
                 { id: 'profile-juliano', name: 'Juliano (RJ)', username: 'juliano', role: 'noc', team: 'torre', oncall: 'nao', password: 'admin' },
-                { id: 'profile-eduardo-l', name: 'Eduardo Leite', username: 'eduardo.leite', role: 'noc', team: 'torre', oncall: 'nao', password: 'admin' }
+                { id: 'profile-eduardo-l', name: 'Eduardo Leite', username: 'eduardo.leite', role: 'noc', team: 'torre', oncall: 'sim', password: 'admin' },
+                { id: 'profile-fabiana', name: 'Fabiana', username: 'fabiana', role: 'noc', team: 'torre', oncall: 'sim', password: 'admin' },
+                { id: 'profile-claudinei', name: 'Claudinei', username: 'claudinei', role: 'noc', team: 'torre', oncall: 'sim', password: 'admin' }
             ];
+            localStorage.setItem('ufinet_profiles', JSON.stringify(initialProfiles));];
             localStorage.setItem('ufinet_profiles', JSON.stringify(initialProfiles));
 
             const newShiftsData = {
@@ -1099,7 +1102,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             }
 
-            localStorage.setItem('ufinet_db_cleaned_v3', 'true');
+            localStorage.setItem('ufinet_db_cleaned_v4', 'true');
             window.location.reload();
             return;
         }
