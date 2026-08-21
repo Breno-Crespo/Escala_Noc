@@ -975,7 +975,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 { id: 'profile-fabiana', name: 'Fabiana', username: 'fabiana', role: 'noc', team: 'torre', oncall: 'sim', password: 'admin' },
                 { id: 'profile-claudinei', name: 'Claudinei', username: 'claudinei', role: 'noc', team: 'torre', oncall: 'sim', password: 'admin' }
             ];
-            localStorage.setItem('ufinet_profiles', JSON.stringify(initialProfiles));];
             localStorage.setItem('ufinet_profiles', JSON.stringify(initialProfiles));
 
             const newShiftsData = {
