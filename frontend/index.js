@@ -2401,10 +2401,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (filterSobreMonth) filterSobreMonth.value = currentM.toString();
     if (filterSobreYear) filterSobreYear.value = currentY.toString();
 
-    const minMonthSelect = document.getElementById('minha-escala-month');
-    const minYearSelect = document.getElementById('minha-escala-year');
-    if (minMonthSelect) minMonthSelect.value = currentM.toString();
-    if (minYearSelect) minYearSelect.value = currentY.toString();
+    const elMinMonth = document.getElementById('minha-escala-month');
+    const elMinYear = document.getElementById('minha-escala-year');
+    if (elMinMonth) elMinMonth.value = currentM.toString();
+    if (elMinYear) elMinYear.value = currentY.toString();
 
     if (filterNocMonth && filterNocYear && titleTurnosNoc) {
         const selectedMonthName = monthNames[currentM - 1];
