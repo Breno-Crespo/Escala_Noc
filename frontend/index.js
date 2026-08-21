@@ -977,103 +977,44 @@ document.addEventListener('DOMContentLoaded', async () => {
             ];
             localStorage.setItem('ufinet_profiles', JSON.stringify(initialProfiles));
 
-            const newShiftsData = {
-                // Ericles Sousa
-                'ericles.sousa|2026|8|19': '7h-16h', 'ericles.sousa|2026|8|20': '7h-16h', 'ericles.sousa|2026|8|21': '7h-16h', 'ericles.sousa|2026|8|22': 'Folga', 'ericles.sousa|2026|8|23': 'Folga',
-                'ericles.sousa|2026|8|24': '7h-16h', 'ericles.sousa|2026|8|25': '7h-16h', 'ericles.sousa|2026|8|26': '7h-16h', 'ericles.sousa|2026|8|27': '7h-16h', 'ericles.sousa|2026|8|28': '7h-16h',
-                'ericles.sousa|2026|8|29': '7h-16h', 'ericles.sousa|2026|8|30': '7h-16h', 'ericles.sousa|2026|8|31': 'Folga', 'ericles.sousa|2026|9|1': '7h-16h', 'ericles.sousa|2026|9|2': '7h-16h',
-                'ericles.sousa|2026|9|3': '7h-16h', 'ericles.sousa|2026|9|4': '7h-16h', 'ericles.sousa|2026|9|5': 'Folga', 'ericles.sousa|2026|9|6': 'Folga',
-
-                // Pedro
-                'pedro|2026|8|19': 'Folga', 'pedro|2026|8|20': 'Folga', 'pedro|2026|8|21': '7h-16h', 'pedro|2026|8|22': '7h-16h', 'pedro|2026|8|23': '7h-16h',
-                'pedro|2026|8|24': 'Folga', 'pedro|2026|8|25': '7h-16h', 'pedro|2026|8|26': '7h-16h', 'pedro|2026|8|27': '7h-16h', 'pedro|2026|8|28': '7h-16h',
-                'pedro|2026|8|29': 'Folga', 'pedro|2026|8|30': 'Folga', 'pedro|2026|8|31': '7h-16h', 'pedro|2026|9|1': '7h-16h', 'pedro|2026|9|2': '7h-16h',
-                'pedro|2026|9|3': 'Folga', 'pedro|2026|9|4': '7h-16h', 'pedro|2026|9|5': '7h-16h', 'pedro|2026|9|6': '7h-16h',
-
-                // Cassia
-                'cassia|2026|8|19': '09h-18h', 'cassia|2026|8|20': '09h-18h', 'cassia|2026|8|21': '09h-18h', 'cassia|2026|8|22': 'Folga', 'cassia|2026|8|23': 'Folga',
-                'cassia|2026|8|24': '09h-18h', 'cassia|2026|8|25': '09h-18h', 'cassia|2026|8|26': 'Folga', 'cassia|2026|8|27': 'Folga', 'cassia|2026|8|28': '09h-18h',
-                'cassia|2026|8|29': '09h-18h', 'cassia|2026|8|30': '09h-18h', 'cassia|2026|8|31': 'Folga', 'cassia|2026|9|1': '09h-18h', 'cassia|2026|9|2': '09h-18h',
-                'cassia|2026|9|3': '09h-18h', 'cassia|2026|9|4': 'Folga', 'cassia|2026|9|5': '16h-22h', 'cassia|2026|9|6': 'Folga',
-
-                // Maxwel Dantas
-                'maxwel.dantas|2026|8|19': 'Folga', 'maxwel.dantas|2026|8|20': 'Folga', 'maxwel.dantas|2026|8|21': '13h-22h', 'maxwel.dantas|2026|8|22': '09h-18h', 'maxwel.dantas|2026|8|23': '09h-18h',
-                'maxwel.dantas|2026|8|24': 'Folga', 'maxwel.dantas|2026|8|25': '13h-22h', 'maxwel.dantas|2026|8|26': '10h-19h', 'maxwel.dantas|2026|8|27': '10h-19h', 'maxwel.dantas|2026|8|28': '09h-18h',
-                'maxwel.dantas|2026|8|29': 'Folga', 'maxwel.dantas|2026|8|30': 'Folga', 'maxwel.dantas|2026|8|31': '10h-19h', 'maxwel.dantas|2026|9|1': '10h-19h', 'maxwel.dantas|2026|9|2': 'Folga',
-                'maxwel.dantas|2026|9|3': 'Folga', 'maxwel.dantas|2026|9|4': '09h-18h', 'maxwel.dantas|2026|9|5': '09h-18h', 'maxwel.dantas|2026|9|6': '09h-18h',
-
-                // Emerson Silva
-                'emerson.silva|2026|8|19': '12h-21h', 'emerson.silva|2026|8|20': '12h-21h', 'emerson.silva|2026|8|21': 'Folga', 'emerson.silva|2026|8|22': '18h-22h', 'emerson.silva|2026|8|23': '18h-22h',
-                'emerson.silva|2026|8|24': '12h-21h', 'emerson.silva|2026|8|25': 'Folga', 'emerson.silva|2026|8|26': '12h-21h', 'emerson.silva|2026|8|27': '12h-21h', 'emerson.silva|2026|8|28': '12h-21h',
-                'emerson.silva|2026|8|29': 'Folga', 'emerson.silva|2026|8|30': 'Folga', 'emerson.silva|2026|8|31': '12h-21h', 'emerson.silva|2026|9|1': 'Folga', 'emerson.silva|2026|9|2': '12h-21h',
-                'emerson.silva|2026|9|3': '12h-21h', 'emerson.silva|2026|9|4': '12h-21h', 'emerson.silva|2026|9|5': 'Folga', 'emerson.silva|2026|9|6': '17h-22h',
-
-                // Jonathan (RJ)
-                'jonathan|2026|8|19': '12:12h-22h', 'jonathan|2026|8|20': '12:12h-22h', 'jonathan|2026|8|21': 'Folga', 'jonathan|2026|8|22': 'Folga', 'jonathan|2026|8|23': 'Folga',
-                'jonathan|2026|8|24': '12:12h-22h', 'jonathan|2026|8|25': '12:12h-22h', 'jonathan|2026|8|26': 'Folga', 'jonathan|2026|8|27': 'Folga', 'jonathan|2026|8|28': '12:12h-22h',
-                'jonathan|2026|8|29': '12:12h-22h', 'jonathan|2026|8|30': '12:12h-22h', 'jonathan|2026|8|31': 'Folga', 'jonathan|2026|9|1': '12:12h-22h', 'jonathan|2026|9|2': '12:12h-22h',
-                'jonathan|2026|9|3': '12:12h-22h', 'jonathan|2026|9|4': 'Folga', 'jonathan|2026|9|5': '12:12h-22h', 'jonathan|2026|9|6': '12:12h-22h',
-
-                // Allan Martins
-                'allan.martins|2026|8|19': '21h-07h', 'allan.martins|2026|8|20': '21h-07h', 'allan.martins|2026|8|21': '21h-06h', 'allan.martins|2026|8|22': 'Folga', 'allan.martins|2026|8|23': 'Folga',
-                'allan.martins|2026|8|24': '22h-07h', 'allan.martins|2026|8|25': '21h-07h', 'allan.martins|2026|8|26': 'Folga', 'allan.martins|2026|8|27': 'Folga', 'allan.martins|2026|8|28': '22h-07h',
-                'allan.martins|2026|8|29': '22h-07h', 'allan.martins|2026|8|30': '22h-07h', 'allan.martins|2026|8|31': 'Folga', 'allan.martins|2026|9|1': '21h-07h', 'allan.martins|2026|9|2': '22h-07h',
-                'allan.martins|2026|9|3': '22h-07h', 'allan.martins|2026|9|4': '22h-07h', 'allan.martins|2026|9|5': 'Folga', 'allan.martins|2026|9|6': 'Folga',
-
-                // Felipe Ribeiro
-                'felipe.ribeiro|2026|8|19': 'Folga', 'felipe.ribeiro|2026|8|20': 'Folga', 'felipe.ribeiro|2026|8|21': '22h-07h', 'felipe.ribeiro|2026|8|22': '22h-07h', 'felipe.ribeiro|2026|8|23': '22h-07h',
-                'felipe.ribeiro|2026|8|24': 'Folga', 'felipe.ribeiro|2026|8|25': '22h-07h', 'felipe.ribeiro|2026|8|26': '21h-07h', 'felipe.ribeiro|2026|8|27': '21h-07h', 'felipe.ribeiro|2026|8|28': '22h-07h',
-                'felipe.ribeiro|2026|8|29': 'Folga', 'felipe.ribeiro|2026|8|30': 'Folga', 'felipe.ribeiro|2026|8|31': '21h-07h', 'felipe.ribeiro|2026|9|1': '22h-07h', 'felipe.ribeiro|2026|9|2': 'Folga',
-                'felipe.ribeiro|2026|9|3': 'Folga', 'felipe.ribeiro|2026|9|4': '22h-07h', 'felipe.ribeiro|2026|9|5': '22h-07h', 'felipe.ribeiro|2026|9|6': '22h-07h',
-
-                // Jorge Luiz
-                'jorge.luiz|2026|8|19': '7h-16h', 'jorge.luiz|2026|8|20': '7h-16h', 'jorge.luiz|2026|8|21': '7h-16h', 'jorge.luiz|2026|8|22': 'Folga', 'jorge.luiz|2026|8|23': 'Folga',
-                'jorge.luiz|2026|8|24': '7h-16h', 'jorge.luiz|2026|8|25': '7h-16h', 'jorge.luiz|2026|8|26': '7h-16h', 'jorge.luiz|2026|8|27': '7h-16h', 'jorge.luiz|2026|8|28': '7h-16h',
-                'jorge.luiz|2026|8|29': '7h-16h', 'jorge.luiz|2026|8|30': '7h-16h', 'jorge.luiz|2026|8|31': 'Folga', 'jorge.luiz|2026|9|1': '7h-16h', 'jorge.luiz|2026|9|2': '7h-16h',
-                'jorge.luiz|2026|9|3': '7h-16h', 'jorge.luiz|2026|9|4': '7h-16h', 'jorge.luiz|2026|9|5': 'Folga', 'jorge.luiz|2026|9|6': 'Folga',
-
-                // Dariel Souza
-                'dariel.souza|2026|8|19': 'Folga', 'dariel.souza|2026|8|20': 'Folga', 'dariel.souza|2026|8|21': '7h-16h', 'dariel.souza|2026|8|22': '7h-16h', 'dariel.souza|2026|8|23': '7h-16h',
-                'dariel.souza|2026|8|24': 'Folga', 'dariel.souza|2026|8|25': '7h-16h', 'dariel.souza|2026|8|26': '7h-16h', 'dariel.souza|2026|8|27': '7h-16h', 'dariel.souza|2026|8|28': '7h-16h',
-                'dariel.souza|2026|8|29': 'Folga', 'dariel.souza|2026|8|30': 'Folga', 'dariel.souza|2026|8|31': '7h-16h', 'dariel.souza|2026|9|1': '7h-16h', 'dariel.souza|2026|9|2': '7h-16h',
-                'dariel.souza|2026|9|3': 'Folga', 'dariel.souza|2026|9|4': '7h-16h', 'dariel.souza|2026|9|5': '7h-16h', 'dariel.souza|2026|9|6': '7h-16h',
-
-                // Leandro
-                'leandro|2026|8|19': '09h-18h', 'leandro|2026|8|20': '09h-18h', 'leandro|2026|8|21': '09h-18h', 'leandro|2026|8|22': 'Folga', 'leandro|2026|8|23': 'Folga',
-                'leandro|2026|8|24': '09h-18h', 'leandro|2026|8|25': '09h-18h', 'leandro|2026|8|26': 'Folga', 'leandro|2026|8|27': 'Folga', 'leandro|2026|8|28': '09h-18h',
-                'leandro|2026|8|29': '09h-18h', 'leandro|2026|8|30': '09h-18h', 'leandro|2026|8|31': 'Folga', 'leandro|2026|9|1': '09h-18h', 'leandro|2026|9|2': '09h-18h',
-                'leandro|2026|9|3': '09h-18h', 'leandro|2026|9|4': 'Folga', 'leandro|2026|9|5': '17h-22h', 'leandro|2026|9|6': 'Folga',
-
-                // Eduardo Pereira
-                'eduardo.pereira|2026|8|19': 'Folga', 'eduardo.pereira|2026|8|20': 'Folga', 'eduardo.pereira|2026|8|21': '13h-22h', 'eduardo.pereira|2026|8|22': '09h-18h', 'eduardo.pereira|2026|8|23': '09h-18h',
-                'eduardo.pereira|2026|8|24': 'Folga', 'eduardo.pereira|2026|8|25': '13h-22h', 'eduardo.pereira|2026|8|26': '10h-19h', 'eduardo.pereira|2026|8|27': '10h-19h', 'eduardo.pereira|2026|8|28': '09h-18h',
-                'eduardo.pereira|2026|8|29': 'Folga', 'eduardo.pereira|2026|8|30': 'Folga', 'eduardo.pereira|2026|8|31': '09h-18h', 'eduardo.pereira|2026|9|1': '09h-18h', 'eduardo.pereira|2026|9|2': 'Folga',
-                'eduardo.pereira|2026|9|3': 'Folga', 'eduardo.pereira|2026|9|4': '09h-18h', 'eduardo.pereira|2026|9|5': '09h-18h', 'eduardo.pereira|2026|9|6': '09h-18h',
-
-                // Rodolfo Gomes
-                'rodolfo.gomes|2026|8|19': '15h-00h', 'rodolfo.gomes|2026|8|20': '15h-00h', 'rodolfo.gomes|2026|8|21': 'Folga', 'rodolfo.gomes|2026|8|22': '18h-22h', 'rodolfo.gomes|2026|8|23': '18h-22h',
-                'rodolfo.gomes|2026|8|24': '15h-00h', 'rodolfo.gomes|2026|8|25': 'Folga', 'rodolfo.gomes|2026|8|26': '15h-00h', 'rodolfo.gomes|2026|8|27': '15h-00h', 'rodolfo.gomes|2026|8|28': '15h-00h',
-                'rodolfo.gomes|2026|8|29': 'Folga', 'rodolfo.gomes|2026|8|30': 'Folga', 'rodolfo.gomes|2026|8|31': '15h-00h', 'rodolfo.gomes|2026|9|1': '15h-00h', 'rodolfo.gomes|2026|9|2': '15h-00h',
-                'rodolfo.gomes|2026|9|3': '15h-00h', 'rodolfo.gomes|2026|9|4': 'Folga', 'rodolfo.gomes|2026|9|5': 'Folga', 'rodolfo.gomes|2026|9|6': '17h-22h',
-
-                // Breno
-                'breno|2026|8|19': '12:12h-22h', 'breno|2026|8|20': '12:12h-22h', 'breno|2026|8|21': 'Folga', 'breno|2026|8|22': 'Folga', 'breno|2026|8|23': 'Folga',
-                'breno|2026|8|24': '12:12h-22h', 'breno|2026|8|25': '12:12h-22h', 'breno|2026|8|26': '12:12h-22h', 'breno|2026|8|27': '12:12h-22h', 'breno|2026|8|28': '12:12h-22h',
-                'breno|2026|8|29': 'Folga', 'breno|2026|8|30': 'Folga', 'breno|2026|8|31': '12:12h-22h', 'breno|2026|9|1': '12:12h-22h', 'breno|2026|9|2': '12:12h-22h',
-                'breno|2026|9|3': '12:12h-22h', 'breno|2026|9|4': '12:12h-22h', 'breno|2026|9|5': '12:12h-22h', 'breno|2026|9|6': '12:12h-22h',
-
-                // Raphael (RJ)
-                'raphael|2026|8|19': '22h-07:48h', 'raphael|2026|8|20': '22h-07:48h', 'raphael|2026|8|21': '22h-07:48h', 'raphael|2026|8|22': 'Folga', 'raphael|2026|8|23': 'Folga',
-                'raphael|2026|8|24': '22h-07:48h', 'raphael|2026|8|25': '22h-07:48h', 'raphael|2026|8|26': 'Folga', 'raphael|2026|8|27': 'Folga', 'raphael|2026|8|28': '22h-07:48h',
-                'raphael|2026|8|29': '22h-07:48h', 'raphael|2026|8|30': '22h-07:48h', 'raphael|2026|8|31': 'Folga', 'raphael|2026|9|1': '22h-07:48h', 'raphael|2026|9|2': '22h-07:48h',
-                'raphael|2026|9|3': '22h-07:48h', 'raphael|2026|9|4': '22h-07:48h', 'raphael|2026|9|5': 'Folga', 'raphael|2026|9|6': 'Folga',
-
-                // Juliano (RJ)
-                'juliano|2026|8|19': 'Folga', 'juliano|2026|8|20': 'Folga', 'juliano|2026|8|21': '22h-07h', 'juliano|2026|8|22': '22h-07h', 'juliano|2026|8|23': '22h-07h',
-                'juliano|2026|8|24': 'Folga', 'juliano|2026|8|25': '22h-07h', 'juliano|2026|8|26': '22h-07h', 'juliano|2026|8|27': '22h-07h', 'juliano|2026|8|28': '22h-07h',
-                'juliano|2026|8|29': 'Folga', 'juliano|2026|8|30': 'Folga', 'juliano|2026|8|31': '22h-07h', 'juliano|2026|9|1': '22h-07h', 'juliano|2026|9|2': 'Folga',
-                'juliano|2026|9|3': 'Folga', 'juliano|2026|9|4': '22h-07h', 'juliano|2026|9|5': '22h-07h', 'juliano|2026|9|6': '22h-07h'
+            const basePatterns = {
+                'ericles.sousa': ['7h-16h', '7h-16h', '7h-16h', 'Folga', 'Folga', '7h-16h', '7h-16h', '7h-16h', '7h-16h', '7h-16h', '7h-16h', '7h-16h', 'Folga', '7h-16h', '7h-16h', '7h-16h', '7h-16h', 'Folga', 'Folga'],
+                'pedro': ['Folga', 'Folga', '7h-16h', '7h-16h', '7h-16h', 'Folga', '7h-16h', '7h-16h', '7h-16h', '7h-16h', 'Folga', 'Folga', '7h-16h', '7h-16h', '7h-16h', 'Folga', '7h-16h', '7h-16h', '7h-16h'],
+                'cassia': ['09h-18h', '09h-18h', '09h-18h', 'Folga', 'Folga', '09h-18h', '09h-18h', 'Folga', 'Folga', '09h-18h', '09h-18h', '09h-18h', 'Folga', '09h-18h', '09h-18h', '09h-18h', 'Folga', '16h-22h', 'Folga'],
+                'maxwel.dantas': ['Folga', 'Folga', '13h-22h', '09h-18h', '09h-18h', 'Folga', '13h-22h', '10h-19h', '10h-19h', '09h-18h', 'Folga', 'Folga', '10h-19h', '10h-19h', 'Folga', 'Folga', '09h-18h', '09h-18h', '09h-18h'],
+                'emerson.silva': ['12h-21h', '12h-21h', 'Folga', '18h-22h', '18h-22h', '12h-21h', 'Folga', '12h-21h', '12h-21h', '12h-21h', 'Folga', 'Folga', '12h-21h', 'Folga', '12h-21h', '12h-21h', '12h-21h', 'Folga', '17h-22h'],
+                'jonathan': ['12:12h-22h', '12:12h-22h', 'Folga', 'Folga', 'Folga', '12:12h-22h', '12:12h-22h', 'Folga', 'Folga', '12:12h-22h', '12:12h-22h', '12:12h-22h', 'Folga', '12:12h-22h', '12:12h-22h', '12:12h-22h', 'Folga', '12:12h-22h', '12:12h-22h'],
+                'allan.martins': ['21h-07h', '21h-07h', '21h-06h', 'Folga', 'Folga', '22h-07h', '21h-07h', 'Folga', 'Folga', '22h-07h', '22h-07h', '22h-07h', 'Folga', '21h-07h', '22h-07h', 'Folga', 'Folga', '21h-07h', '22h-07h'],
+                'felipe.ribeiro': ['Folga', 'Folga', '22h-07h', '22h-07h', '22h-07h', 'Folga', '22h-07h', '21h-07h', '21h-07h', '22h-07h', 'Folga', 'Folga', '21h-07h', '22h-07h', 'Folga', 'Folga', '22h-07h', '22h-07h', '22h-07h'],
+                'jorge.luiz': ['7h-16h', '7h-16h', '7h-16h', 'Folga', 'Folga', '7h-16h', '7h-16h', '7h-16h', '7h-16h', '7h-16h', '7h-16h', '7h-16h', 'Folga', '7h-16h', '7h-16h', '7h-16h', '7h-16h', 'Folga', 'Folga'],
+                'dariel.souza': ['Folga', 'Folga', '7h-16h', '7h-16h', '7h-16h', 'Folga', '7h-16h', '7h-16h', '7h-16h', '7h-16h', 'Folga', 'Folga', '7h-16h', '7h-16h', '7h-16h', 'Folga', '7h-16h', '7h-16h', '7h-16h'],
+                'leandro': ['09h-18h', '09h-18h', '09h-18h', 'Folga', 'Folga', '09h-18h', '09h-18h', 'Folga', 'Folga', '09h-18h', '09h-18h', '09h-18h', 'Folga', '09h-18h', '09h-18h', '09h-18h', 'Folga', '17h-22h', 'Folga'],
+                'eduardo.pereira': ['Folga', 'Folga', '13h-22h', '09h-18h', '09h-18h', 'Folga', '13h-22h', '10h-19h', '10h-19h', '09h-18h', 'Folga', 'Folga', '09h-18h', '09h-18h', 'Folga', 'Folga', '09h-18h', '09h-18h', '09h-18h'],
+                'rodolfo.gomes': ['15h-00h', '15h-00h', 'Folga', '18h-22h', '18h-22h', '15h-00h', 'Folga', '15h-00h', '15h-00h', '15h-00h', 'Folga', 'Folga', '15h-00h', '15h-00h', '15h-00h', '15h-00h', 'Folga', 'Folga', '17h-22h'],
+                'breno': ['12:12h-22h', '12:12h-22h', 'Folga', 'Folga', 'Folga', '12:12h-22h', '12:12h-22h', '12:12h-22h', '12:12h-22h', '12:12h-22h', 'Folga', 'Folga', '12:12h-22h', '12:12h-22h', '12:12h-22h', '12:12h-22h', '12:12h-22h', '12:12h-22h', '12:12h-22h'],
+                'raphael': ['22h-07:48h', '22h-07:48h', '22h-07:48h', 'Folga', 'Folga', '22h-07:48h', '22h-07:48h', 'Folga', 'Folga', '22h-07:48h', '22h-07:48h', '22h-07:48h', 'Folga', '22h-07:48h', '22h-07:48h', '22h-07:48h', '22h-07:48h', 'Folga', 'Folga'],
+                'juliano': ['Folga', 'Folga', '22h-07h', '22h-07h', '22h-07h', 'Folga', '22h-07h', '22h-07h', '22h-07h', '22h-07h', 'Folga', 'Folga', '22h-07h', '22h-07h', 'Folga', 'Folga', '22h-07h', '22h-07h', '22h-07h']
             };
+
+            const newShiftsData = {};
+            const startDate = new Date(2026, 7, 19);
+            const endDate = new Date(2026, 11, 31);
+            
+            for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+                const year = d.getFullYear();
+                const month = d.getMonth() + 1;
+                const day = d.getDate();
+                const diffTime = d.getTime() - startDate.getTime();
+                const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+                const dayIndex = diffDays % 19;
+                
+                for (let employee in basePatterns) {
+                    const shiftVal = basePatterns[employee][dayIndex];
+                    const key = `${employee}|${year}|${month}|${day}`;
+                    newShiftsData[key] = shiftVal;
+                }
+            }
+
             localStorage.setItem('ufinet_shifts', JSON.stringify(newShiftsData));
 
             if (supabaseClient) {
@@ -1083,25 +1024,32 @@ document.addEventListener('DOMContentLoaded', async () => {
                     await supabaseClient.from('vacations').delete().neq('id', '0');
                     await supabaseClient.from('profiles').delete().neq('id', '0');
 
-                    for (let p of initialProfiles) {
-                        await supabaseClient.from('profiles').insert([p]);
-                    }
+                    // Bulk insert profiles
+                    await supabaseClient.from('profiles').insert(initialProfiles);
+
+                    // Build and bulk insert shifts in chunks of 500
+                    const shiftsToInsert = [];
                     for (let key in newShiftsData) {
                         const [username, year, month, day] = key.split('|');
-                        await supabaseClient.from('shifts').insert([{
+                        shiftsToInsert.push({
                             employee_name: username,
                             year: parseInt(year),
                             month: parseInt(month),
                             day: parseInt(day),
                             shift_value: newShiftsData[key]
-                        }]);
+                        });
+                    }
+
+                    for (let i = 0; i < shiftsToInsert.length; i += 500) {
+                        const chunk = shiftsToInsert.slice(i, i + 500);
+                        await supabaseClient.from('shifts').insert(chunk);
                     }
                 } catch(e) {
                     console.error("Erro ao limpar e re-semear Supabase:", e);
                 }
             }
 
-            localStorage.setItem('ufinet_db_cleaned_v4', 'true');
+            localStorage.setItem('ufinet_db_cleaned_v5', 'true');
             window.location.reload();
             return;
         }
