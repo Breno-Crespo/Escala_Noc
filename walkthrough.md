@@ -1,35 +1,27 @@
-# Walkthrough: Melhorias Avançadas e Recursos de Produção para o Sistema de Escalas
+# Walkthrough: Novo Padrão de Escala e Cores Excel (Agosto/Setembro 2026)
 
-Nesta fase de finalização e polimento para o ambiente Web, implementamos 8 novos recursos interativos e de suporte operacional.
+Esta atualização ajusta as escalas do sistema e o visual de blocos com base no novo modelo de planilha fornecido.
 
 ---
 
-## 🚀 Novas Funcionalidades Implementadas
+## 🛠️ Modificações Realizadas
 
-1. **📅 Visualização Individual ("Minha Escala")**:
-   - Criamos uma aba exclusiva com visualização em formato de **Calendário Mensal** ($7 \times 5$).
-   - Quando analistas de NOC ou RH fazem login, eles são redirecionados diretamente para essa aba, onde visualizam apenas os seus turnos de trabalho, folgas, atestados e sobreavisos agendados no mês corrente, mantendo a privacidade e o foco nas suas escalas individuais.
+1. **👥 Lista Atualizada de Colaboradores (N1 e TDC)**:
+   - **N1**: Ericles Sousa, Pedro, Cassia, Maxwel Dantas, Emerson Silva, Jonathan (RJ), Allan Martins, Felipe Ribeiro.
+   - **TDC (Torre)**: Jorge Luiz, Dariel Souza, Leandro, Eduardo Pereira, Rodolfo Gomes, Breno, Raphael (RJ), Juliano (RJ), Eduardo Leite.
+   - Removemos contas de exemplo antigas que não constavam no novo escopo (como Thiago Silva e Bruno Landra).
 
-2. **🚨 Alerta Automático de Desfalque (Understaffing)**:
-   - Implementamos um scanner diário inteligente no Dashboard. Se em algum dia do mês a quantidade de analistas escalados no N1 ou na Torre de Controle for igual a zero, um alerta vermelho em destaque avisa imediatamente: *"⚠️ Dia DD/MM sem operadores no setor X!"*, permitindo ação preventiva.
+2. **📅 Importação de Escala (19/08/2026 a 06/09/2026)**:
+   - Injetamos as coordenadas completas de turnos de todos os 17 funcionários para os meses de **Agosto/2026** e **Setembro/2026**.
+   - As folgas do meio de semana e escalas específicas foram inseridas com precisão cirúrgica de acordo com a planilha de referência.
 
-3. **💾 Autogeração de Escalas por Padrão (Jornadas)**:
-   - Adicionamos a opção de preenchimento automático no formulário de criação/edição de perfis.
-   - O Coordenador pode selecionar padrões como `Escala 12x36 (Dia)`, `Escala 12x36 (Noite)` ou `Escala Administrativa 5x2`. O sistema gera e insere todos os turnos correspondentes no mês no Supabase automaticamente.
-
-4. **📤 Exportação de Escala (PDF / CSV)**:
-   - **CSV**: Botão de exportação que compila a grade NOC mensal com formatação correta de acentos e codificação UTF-8 com BOM, pronta para abrir direto no Microsoft Excel.
-   - **Imprimir / PDF**: Botão que dispara a impressão nativa configurada com `@media print` CSS para gerar relatórios limpos no formato paisagem (ocultando sidebar, cabeçalho e formulários).
-
-5. **📝 Logs de Auditoria de Escala (Audit Trail)**:
-   - Criada a tabela `audit_logs` no Supabase.
-   - O sistema grava detalhadamente toda e qualquer alteração de escala realizada por Coordenadores (Quem alterou, data da alteração, qual funcionário/dia foi modificado, valor antigo e valor novo). A tabela histórica é renderizada no Dashboard exclusivamente para o Coordenador.
-
-6. **🌗 Alternador de Tema (Light / Dark Mode)**:
-   - Adicionamos um alternador de tema na barra lateral. O tema selecionado (Escuro ou Claro) é gravado no navegador e se mantém ativo em logins posteriores.
-
-7. **📊 Relatório de Equidade (Controle de Finais de Semana)**:
-   - Tabela organizada no Dashboard que conta dinamicamente quantos sábados e domingos cada analista trabalhou no mês, ajudando a coordenar escalas mais justas.
-
-8. **🛡️ Confirmação Customizada de Exclusão (Popup)**:
-   - Substituímos caixas de diálogo nativas do navegador por um modal de confirmação customizado que evita cliques acidentais ao excluir perfis de acesso.
+3. **🎨 Cores no Padrão Excel (Visual Idêntico)**:
+   - Mapeamos as classes de turnos e aplicamos as seguintes cores de preenchimento e fontes:
+     - `7h-16h` (Rosa): `#fbcfe8`
+     - `09h-18h` (Azul Claro): `#bfdbfe`
+     - `13h-22h` / `10h-19h` (Azul Médio): `#3b82f6`
+     - `12h-21h` / `15h-00h` (Amarelo): `#fef08a`
+     - `18h-22h` / `17h-22h` / `16h-22h` (Laranja): `#fed7aa`
+     - `21h-07h` / `21h-06h` / `22h-07h` (Verde): `#86efac`
+     - `12:12h-22h` (Cinza): `#e2e8f0`
+     - `Folga` (Verde Claro Suave): `#dcfce7` (conforme padrão do Excel).
