@@ -2391,6 +2391,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 1. Carregar arquivo config.js e configurar cliente Supabase Cloud
     await configureSupabase();
 
+    // Configurar seletores de escala para o mês e ano atual do sistema
+    const initDate = new Date();
+    const currentM = initDate.getMonth() + 1;
+    const currentY = initDate.getFullYear();
+
+    if (filterNocMonth) filterNocMonth.value = currentM.toString();
+    if (filterNocYear) filterNocYear.value = currentY.toString();
+    if (filterSobreMonth) filterSobreMonth.value = currentM.toString();
+    if (filterSobreYear) filterSobreYear.value = currentY.toString();
+
+    const minMonthSelect = document.getElementById('minha-escala-month');
+    const minYearSelect = document.getElementById('minha-escala-year');
+    if (minMonthSelect) minMonthSelect.value = currentM.toString();
+    if (minYearSelect) minYearSelect.value = currentY.toString();
+
+    if (filterNocMonth && filterNocYear && titleTurnosNoc) {
+        const selectedMonthName = monthNames[currentM - 1];
+        titleTurnosNoc.textContent = `Escala ${selectedMonthName} ${currentY} (Mês Completo - 01 a 31)`;
+    }
+    if (filterSobreMonth && filterSobreYear && titleSobreavisoMonth) {
+        const selectedMonthName = monthNames[currentM - 1];
+        titleSobreavisoMonth.textContent = `Escala de Sobreaviso NOC (${selectedMonthName} ${currentY})`;
+    }
+
     // 2. Carregar e renderizar todos os dados das tabelas e estatísticas
     await loadAllDataAndRender();
 

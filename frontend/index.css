@@ -643,11 +643,11 @@ body {
 
 /* Cores de Finais de Semana (Fundo das colunas de Sábados e Domingos nas linhas) */
 .employee-row td.col-weekend-sat {
-    background-color: #fff7ed !important; /* Laranja suave */
+    /* Sem sobresscrever a cor do turno */
 }
 
 .employee-row td.col-weekend-sun {
-    background-color: #f0fdf4 !important; /* Verde suave */
+    /* Sem sobresscrever a cor do turno */
 }
 
 .status-default-shift {
@@ -1462,11 +1462,11 @@ body.dark-theme .filter-input {
 }
 
 body.dark-theme td.col-weekend-sat {
-    background-color: rgba(249, 115, 22, 0.08) !important;
+    /* Sem sobresscrever a cor do turno */
 }
 
 body.dark-theme td.col-weekend-sun {
-    background-color: rgba(16, 185, 129, 0.08) !important;
+    /* Sem sobresscrever a cor do turno */
 }
 
 /* ================= 2. IMPRESSÃO (@MEDIA PRINT) ================= */
