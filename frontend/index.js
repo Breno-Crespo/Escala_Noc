@@ -364,14 +364,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     if (hasSat) activeCell.classList.add('col-weekend-sat');
                     if (hasSun) activeCell.classList.add('col-weekend-sun');
 
-                    let newClass = 'status-default-shift';
-                    if (shift === 'Folga') {
-                        newClass = 'status-folga';
-                    } else if (shift === 'FÉRIAS') {
-                        newClass = 'status-ferias';
-                    } else if (shift === 'Atestado') {
-                        newClass = 'status-atestado';
-                    }
+                    const newClass = getShiftClass(shift);
                     activeCell.classList.add(newClass);
                     activeCell.textContent = shift;
                     const username = activeCell.parentElement.getAttribute('data-username');
@@ -424,14 +417,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (hasSat) activeCell.classList.add('col-weekend-sat');
             if (hasSun) activeCell.classList.add('col-weekend-sun');
 
-            let newClass = 'status-default-shift';
-            if (shift === 'Folga') {
-                newClass = 'status-folga';
-            } else if (shift === 'FÉRIAS') {
-                newClass = 'status-ferias';
-            } else if (shift === 'Atestado') {
-                newClass = 'status-atestado';
-            }
+            const newClass = getShiftClass(shift);
             activeCell.classList.add(newClass);
             activeCell.textContent = shift;
 
