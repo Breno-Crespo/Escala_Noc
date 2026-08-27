@@ -186,7 +186,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const btnLogout = document.getElementById('btn-logout');
     
     if (loginForm) {
-        loginForm.addEventListener('submit', () => {
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
             const userVal = document.getElementById('login-username').value.toLowerCase().trim();
             const passVal = document.getElementById('login-password').value;
             const btnSpan = btnLogin.querySelector('span');
