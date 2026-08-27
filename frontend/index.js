@@ -1735,16 +1735,35 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
         
-        if (lower.includes('folga')) return 'status-folga';
-        if (lower.includes('férias') || lower.includes('ferias')) return 'status-ferias';
-        if (lower.includes('atestado')) return 'status-atestado';
-        if (lower.includes('7h-16h')) return 'status-7h-16h';
-        if (lower.includes('9h-18h') || lower.includes('09h-18h')) return 'status-09h-18h';
-        if (lower.includes('13h-22h') || lower.includes('10h-19h')) return 'status-blue-shift';
-        if (lower.includes('12h-21h') || lower.includes('15h-00h')) return 'status-yellow-shift';
-        if (lower.includes('18h-22h') || lower.includes('17h-22h') || lower.includes('16h-22h')) return 'status-orange-shift';
-        if (lower.includes('21h-') || lower.includes('22h-')) return 'status-green-shift';
-        if (lower.includes('12:12h')) return 'status-gray-shift';
+        // Normalização de espaços para comparações robustas
+        const norm = lower.replace(/\s+/g, '').replace(/~/g, '-');
+        
+        if (norm.includes('folga')) return 'status-folga';
+        if (norm.includes('férias') || norm.includes('ferias')) return 'status-ferias';
+        if (norm.includes('atestado')) return 'status-atestado';
+        
+        // 7h-16h
+        if (norm.includes('7h-16h') || (norm.includes('7h') && norm.includes('16'))) return 'status-7h-16h';
+        
+        // 8h-17h (N2)
+        if (norm.includes('8h-17h') || (norm.includes('8h') && norm.includes('17'))) return 'status-08h-17h';
+        
+        // 9h-18h
+        if (norm.includes('9h-18h') || norm.includes('09h-18h') || (norm.includes('9h') && norm.includes('18')) || (norm.includes('09h') && norm.includes('18'))) return 'status-09h-18h';
+        
+        // 13h-22h / 10h-19h
+        if (norm.includes('13h-22h') || norm.includes('10h-19h') || (norm.includes('13h') && norm.includes('22')) || (norm.includes('10h') && norm.includes('19'))) return 'status-blue-shift';
+        
+        // 12h-21h / 15h-00h / 15h-24h (N2)
+        if (norm.includes('12h-21h') || norm.includes('15h-00h') || norm.includes('15h-24h') || (norm.includes('12h') && norm.includes('21')) || (norm.includes('15h') && (norm.includes('00') || norm.includes('24')))) return 'status-yellow-shift';
+        
+        // 18h-22h / 17h-22h / 16h-22h / 14h-22h (N2)
+        if (norm.includes('18h-22h') || norm.includes('17h-22h') || norm.includes('16h-22h') || norm.includes('14h-22h') || (norm.includes('18h') && norm.includes('22')) || (norm.includes('17h') && norm.includes('22')) || (norm.includes('16h') && norm.includes('22')) || (norm.includes('14h') && norm.includes('22'))) return 'status-orange-shift';
+        
+        // 21h-07h / 22h-07h / 24h
+        if (norm.includes('21h-') || norm.includes('22h-') || norm.includes('24h')) return 'status-green-shift';
+        
+        if (norm.includes('12:12h')) return 'status-gray-shift';
         
         return 'status-default-shift';
     }
