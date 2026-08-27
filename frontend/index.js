@@ -148,6 +148,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         categoryRows.forEach(catRow => {
             const isN1Cat = catRow.textContent.includes('Colaboradores N1');
             const isTorreCat = catRow.textContent.includes('Colaboradores Torre de Controle');
+            const isN2Cat = catRow.textContent.includes('Colaboradores N2');
             const nextRows = getNextEmployeeRows(catRow);
             
             const hasVisibleRow = nextRows.some(row => row.style.display !== 'none');
@@ -158,6 +159,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             } else if (selectedTeam === 'n1' && isN1Cat) {
                 shouldShow = hasVisibleRow || searchTerm === '';
             } else if (selectedTeam === 'torre' && isTorreCat) {
+                shouldShow = hasVisibleRow || searchTerm === '';
+            } else if (selectedTeam === 'n2' && isN2Cat) {
                 shouldShow = hasVisibleRow || searchTerm === '';
             }
 
@@ -311,6 +314,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         '12:12h-22h': 'status-gray-shift',
         '15H - 00H': 'status-yellow-shift',
         '15h-00h': 'status-yellow-shift',
+        '15h-24h': 'status-yellow-shift',
+        '8h-17h': 'status-08h-17h',
+        '08h-17h': 'status-08h-17h',
+        '24h (Sáb)': 'status-green-shift',
+        '24h (Feriado)': 'status-green-shift',
         'FÉRIAS': 'status-ferias',
         'Atestado': 'status-atestado',
         'Folga': 'status-folga',
@@ -318,10 +326,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     const listShifts = [
-        '9h-18h', '7h-16h', '09h-21h', '07h-19h', '19h-7h',
-        '12h-21h', '13h-21h', '13h-22h', '14h-22h', '9h ~ 18h',
+        '9h-18h', '8h-17h', '7h-16h', '09h-21h', '07h-19h', '19h-7h',
+        '12h-21h', '13h-21h', '13h-22h', '14h-22h', '15h-24h', '9h ~ 18h',
         '14h ~ 22h', '12:12h-22h', '22h-07h', '21h-07h',
-        '22h-07:48h', '15H - 00H', '13H - 22H', 'FÉRIAS',
+        '22h-07:48h', '15H - 00H', '13H - 22H', '24h (Sáb)', 'FÉRIAS',
         'Atestado', 'Folga', 'SOBREAVISO'
     ];
 
@@ -945,7 +953,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     async function loadAllDataAndRender() {
-        const isCleaned = localStorage.getItem('ufinet_db_cleaned_v6') === 'true';
+        const isCleaned = localStorage.getItem('ufinet_db_cleaned_v7') === 'true';
         if (!isCleaned) {
             localStorage.removeItem('ufinet_profiles');
             localStorage.removeItem('ufinet_shifts');
@@ -964,7 +972,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 { id: 'profile-allan', name: 'Allan Martins', username: 'allan.martins', role: 'noc', team: 'n1', oncall: 'nao', password: 'admin' },
                 { id: 'profile-felipe', name: 'Felipe Ribeiro', username: 'felipe.ribeiro', role: 'noc', team: 'n1', oncall: 'nao', password: 'admin' },
                 { id: 'profile-jorge', name: 'Jorge Luiz', username: 'jorge.luiz', role: 'noc', team: 'torre', oncall: 'nao', password: 'admin' },
-                { id: 'profile-dariel', name: 'Dariel Souza', username: 'dariel.sousa', role: 'noc', team: 'torre', oncall: 'nao', password: 'admin' },
+                { id: 'profile-dariel', name: 'Dariel Souza', username: 'dariel.souza', role: 'noc', team: 'torre', oncall: 'nao', password: 'admin' },
                 { id: 'profile-leandro', name: 'Leandro', username: 'leandro', role: 'noc', team: 'torre', oncall: 'nao', password: 'admin' },
                 { id: 'profile-eduardop', name: 'Eduardo Pereira', username: 'eduardo.pereira', role: 'noc', team: 'torre', oncall: 'nao', password: 'admin' },
                 { id: 'profile-rodolfo', name: 'Rodolfo Gomes', username: 'rodolfo.gomes', role: 'noc', team: 'torre', oncall: 'nao', password: 'admin' },
@@ -973,7 +981,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 { id: 'profile-juliano', name: 'Juliano (RJ)', username: 'juliano', role: 'noc', team: 'torre', oncall: 'nao', password: 'admin' },
                 { id: 'profile-eduardo-l', name: 'Eduardo Leite', username: 'eduardo.leite', role: 'noc', team: 'torre', oncall: 'sim', password: 'admin' },
                 { id: 'profile-fabiana', name: 'Fabiana', username: 'fabiana', role: 'noc', team: 'torre', oncall: 'sim', password: 'admin' },
-                { id: 'profile-claudinei', name: 'Claudinei', username: 'claudinei', role: 'noc', team: 'torre', oncall: 'sim', password: 'admin' }
+                { id: 'profile-claudinei', name: 'Claudinei', username: 'claudinei', role: 'noc', team: 'torre', oncall: 'sim', password: 'admin' },
+                { id: 'profile-landra', name: 'Bruno Landra', username: 'landra', role: 'noc', team: 'n2', oncall: 'nao', password: 'admin' },
+                { id: 'profile-mijares', name: 'Jose Mijares', username: 'mijares', role: 'noc', team: 'n2', oncall: 'nao', password: 'admin' },
+                { id: 'profile-caio', name: 'Caio Paiva', username: 'caio', role: 'noc', team: 'n2', oncall: 'nao', password: 'admin' },
+                { id: 'profile-renato', name: 'Renato RX', username: 'renato', role: 'noc', team: 'n2', oncall: 'nao', password: 'admin' }
             ];
             localStorage.setItem('ufinet_profiles', JSON.stringify(initialProfiles));
 
@@ -1013,6 +1025,26 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const key = `${employee}|${year}|${month}|${day}`;
                     newShiftsData[key] = shiftVal;
                 }
+
+                // Geração de escala administrativa para o N2 (Segunda a Sexta)
+                const wd = d.getDay(); // 0 = Domingo, 6 = Sábado
+                const isWeekend = (wd === 0 || wd === 6);
+                
+                newShiftsData[`landra|${year}|${month}|${day}`] = isWeekend ? 'Folga' : '8h-17h';
+                newShiftsData[`mijares|${year}|${month}|${day}`] = isWeekend ? 'Folga' : '12h-21h';
+                newShiftsData[`caio|${year}|${month}|${day}`] = isWeekend ? 'Folga' : '15h-24h';
+                newShiftsData[`renato|${year}|${month}|${day}`] = isWeekend ? 'Folga' : '14h-22h';
+
+                // Plantões de Sobreaviso N2 (Sábados/Feriados) específicos da planilha
+                if (year === 2026 && month === 8 && day === 22) newShiftsData[`mijares|${year}|${month}|${day}`] = '24h (Sáb)';
+                if (year === 2026 && month === 9 && day === 12) newShiftsData[`mijares|${year}|${month}|${day}`] = '24h (Sáb)';
+                
+                if (year === 2026 && month === 8 && day === 29) newShiftsData[`caio|${year}|${month}|${day}`] = '24h (Sáb)';
+                if (year === 2026 && month === 9 && day === 19) newShiftsData[`caio|${year}|${month}|${day}`] = '24h (Sáb)';
+                
+                if (year === 2026 && month === 9 && day === 5) newShiftsData[`landra|${year}|${month}|${day}`] = '24h (Sáb)';
+                if (year === 2026 && month === 9 && day === 7) newShiftsData[`landra|${year}|${month}|${day}`] = '24h (Feriado)';
+                if (year === 2026 && month === 9 && day === 26) newShiftsData[`landra|${year}|${month}|${day}`] = '24h (Sáb)';
             }
 
             localStorage.setItem('ufinet_shifts', JSON.stringify(newShiftsData));
@@ -1023,10 +1055,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                     await supabaseClient.from('sobreaviso').delete().neq('id', 0);
                     await supabaseClient.from('vacations').delete().neq('id', '0');
 
-                    const { data: existingProfs } = await supabaseClient.from('profiles').select('id');
-                    if (!existingProfs || existingProfs.length <= 1) {
-                        await supabaseClient.from('profiles').delete().neq('id', '0');
-                        await supabaseClient.from('profiles').insert(initialProfiles);
+                    const { data: existingProfs } = await supabaseClient.from('profiles').select('username');
+                    const existingUsernames = new Set(existingProfs ? existingProfs.map(p => p.username) : []);
+                    const profilesToInsert = initialProfiles.filter(p => !existingUsernames.has(p.username));
+                    
+                    if (profilesToInsert.length > 0) {
+                        await supabaseClient.from('profiles').insert(profilesToInsert);
                     }
 
                     // Build and bulk insert shifts in chunks of 500
@@ -1706,6 +1740,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             const n1Profiles = nocProfiles.filter(p => p.team === 'n1');
             const torreProfiles = nocProfiles.filter(p => p.team === 'torre');
+            const n2Profiles = nocProfiles.filter(p => p.team === 'n2');
 
             // Categoria N1
             const trCatN1 = document.createElement('tr');
@@ -1724,6 +1759,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             tbody.appendChild(trCatTorre);
 
             torreProfiles.forEach(prof => {
+                appendEmployeeRow(tbody, prof, daysCount, year, month, false);
+            });
+
+            // Categoria N2
+            const trCatN2 = document.createElement('tr');
+            trCatN2.className = 'category-row';
+            trCatN2.innerHTML = `<td colspan="${daysCount + 1}">Colaboradores N2</td>`;
+            tbody.appendChild(trCatN2);
+
+            n2Profiles.forEach(prof => {
                 appendEmployeeRow(tbody, prof, daysCount, year, month, false);
             });
         }

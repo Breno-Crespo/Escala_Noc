@@ -581,6 +581,12 @@ body {
     font-weight: 600 !important;
 }
 
+.status-08h-17h {
+    background-color: #f3e8ff !important; /* Roxo claro */
+    color: #6b21a8 !important;
+    font-weight: 600 !important;
+}
+
 .status-09h-18h {
     background-color: #bfdbfe !important; /* Azul claro */
     color: #1e3a8a !important;
