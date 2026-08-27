@@ -1784,9 +1784,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
         
-        if (lower === 'folga') return 'status-folga';
-        if (lower === 'férias') return 'status-ferias';
-        if (lower === 'atestado') return 'status-atestado';
+        if (lower.includes('folga')) return 'status-folga';
+        if (lower.includes('férias') || lower.includes('ferias')) return 'status-ferias';
+        if (lower.includes('atestado')) return 'status-atestado';
         if (lower.includes('7h-16h')) return 'status-7h-16h';
         if (lower.includes('9h-18h') || lower.includes('09h-18h')) return 'status-09h-18h';
         if (lower.includes('13h-22h') || lower.includes('10h-19h')) return 'status-blue-shift';
