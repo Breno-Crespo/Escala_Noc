@@ -729,15 +729,41 @@ document.addEventListener('DOMContentLoaded', async () => {
         const table = isSobreaviso ? 'sobreaviso' : 'shifts';
         if (supabaseClient) {
             try {
-                const { data, error } = await supabaseClient.from(table).select('*');
-                if (!error && data) {
+                let allData = [];
+                let from = 0;
+                const pageSize = 1000;
+                let hasMore = true;
+
+                while (hasMore) {
+                    const { data, error } = await supabaseClient
+                        .from(table)
+                        .select('*')
+                        .range(from, from + pageSize - 1);
+
+                    if (error) {
+                        console.error(`Erro Supabase GetShifts (${table}):`, error);
+                        break;
+                    }
+
+                    if (data && data.length > 0) {
+                        allData.push(...data);
+                        if (data.length < pageSize) {
+                            hasMore = false;
+                        } else {
+                            from += pageSize;
+                        }
+                    } else {
+                        hasMore = false;
+                    }
+                }
+
+                if (allData.length > 0) {
                     const mapped = {};
-                    data.forEach(row => {
+                    allData.forEach(row => {
                         mapped[`${row.employee_name}|${row.year}|${row.month}|${row.day}`] = row.shift;
                     });
                     return mapped;
                 }
-                console.error(`Erro Supabase GetShifts (${table}):`, error);
             } catch (e) {
                 console.error(e);
             }
