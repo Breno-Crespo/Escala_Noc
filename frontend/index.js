@@ -705,8 +705,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Gravar no Supabase (Nuvem)
         if (supabaseClient) {
             try {
-                const { error } = await supabaseClient.from('profiles').upsert([prof]);
-                if (error) console.error("Erro Supabase SaveProfile:", error);
+                if (prof.password && prof.password.startsWith('$2')) {
+                    const { password, ...profWithoutPass } = prof;
+                    const { error } = await supabaseClient.from('profiles').upsert([profWithoutPass]);
+                    if (error) console.error("Erro Supabase SaveProfile (sem senha):", error);
+                } else {
+                    const { error } = await supabaseClient.from('profiles').upsert([prof]);
+                    if (error) console.error("Erro Supabase SaveProfile (com nova senha):", error);
+                }
             } catch (e) {
                 console.error("Erro Supabase SaveProfile:", e);
             }
@@ -1968,29 +1974,47 @@ document.addEventListener('DOMContentLoaded', async () => {
             const editId = document.getElementById('prof-edit-id').value;
             const oldName = document.getElementById('prof-edit-old-name').value;
             
-            if (!name || !username || !role || !password) {
-                showToast('Por favor, preencha todos os campos obrigatórios do perfil (incluindo senha).', 'error');
-                return;
-            }
-
-            if (password.length < 6) {
-                showToast('A senha deve ter no mínimo 6 caracteres por segurança.', 'error');
-                return;
-            }
-
             const profiles = await dbGetProfiles();
 
             if (editId) {
-                const prof = { id: editId, name, username, role, team, oncall, password };
+                if (!name || !username || !role) {
+                    showToast('Por favor, preencha nome, usuário e perfil de acesso.', 'error');
+                    return;
+                }
+
+                const existingProf = profiles.find(p => p.id === editId) || {};
+                let finalPassword = existingProf.password || 'admin';
+
+                if (password) {
+                    if (password.length < 6) {
+                        showToast('A nova senha deve ter no mínimo 6 caracteres.', 'error');
+                        return;
+                    }
+                    finalPassword = password; // Nova senha informada pelo coordenador
+                }
+
+                const prof = { id: editId, name, username, role, team, oncall, password: finalPassword };
                 await dbSaveProfile(prof);
 
                 showToast(`Perfil de ${name} atualizado com sucesso!`, 'success');
                 
                 document.getElementById('prof-edit-id').value = '';
                 document.getElementById('prof-edit-old-name').value = '';
+                document.getElementById('prof-password').value = '';
+                document.getElementById('prof-password').placeholder = 'Senha do perfil';
                 document.getElementById('profile-form-title').textContent = 'Cadastrar Novo Colaborador (Perfil)';
                 btnCreateProfile.textContent = 'Salvar Perfil e Criar Acesso';
             } else {
+                if (!name || !username || !role || !password) {
+                    showToast('Por favor, preencha todos os campos obrigatórios do perfil (incluindo senha).', 'error');
+                    return;
+                }
+
+                if (password.length < 6) {
+                    showToast('A senha deve ter no mínimo 6 caracteres por segurança.', 'error');
+                    return;
+                }
+
                 const exists = profiles.some(p => p.username.toLowerCase() === username.toLowerCase());
                 if (exists) {
                     showToast('Este usuário de login já está em uso.', 'error');
@@ -2035,6 +2059,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             profileForm.reset();
+            document.getElementById('prof-password').placeholder = 'Senha do perfil';
             if (containerProfOncall) containerProfOncall.style.display = 'flex';
             await renderProfilesList();
             renderTurnosNoc();
@@ -2070,11 +2095,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             const role = row.querySelector('.prof-td-role').getAttribute('data-val');
             const team = row.querySelector('.prof-td-team').getAttribute('data-val');
             const oncall = row.querySelector('.prof-td-oncall').getAttribute('data-val');
-            const password = row.querySelector('.prof-td-password').textContent;
 
             document.getElementById('prof-name').value = name;
             document.getElementById('prof-username').value = username;
-            document.getElementById('prof-password').value = password;
+            document.getElementById('prof-password').value = '';
+            document.getElementById('prof-password').placeholder = 'Deixe em branco para manter a senha atual';
             document.getElementById('prof-role').value = role;
             document.getElementById('prof-team').value = team;
             document.getElementById('prof-oncall').value = oncall;
