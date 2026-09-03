@@ -653,7 +653,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const supabaseStatusBanner = document.getElementById('supabase-status-banner');
 
     async function configureSupabase() {
-        const env = window.env; // Carregado do config.js para burlar restrições file:// do navegador!
+        const env = window.env || {
+            SUPABASE_URL: "https://ukzvxadzgvupwxqekubs.supabase.co",
+            SUPABASE_KEY: "sb_publishable_o9qktfQ2fF9tUQsx8w8ANQ_a6ULRFRi"
+        };
         if (env && env.SUPABASE_URL && env.SUPABASE_KEY && window.supabase) {
             try {
                 let cleanUrl = env.SUPABASE_URL.trim();
@@ -882,6 +885,43 @@ document.addEventListener('DOMContentLoaded', async () => {
                 console.error("Erro Supabase SaveVacation:", e);
             }
         }
+    }
+
+    async function dbSaveAuditLog(operator_name, employee_name, shift_date, old_value, new_value) {
+        const logEntry = {
+            id: `log-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+            operator_name: operator_name || 'Sistema',
+            employee_name: employee_name || '',
+            shift_date: shift_date || '',
+            old_value: old_value || '',
+            new_value: new_value || '',
+            created_at: new Date().toISOString()
+        };
+
+        const logs = JSON.parse(localStorage.getItem('ufinet_audit_logs')) || [];
+        logs.unshift(logEntry);
+        if (logs.length > 50) logs.pop();
+        localStorage.setItem('ufinet_audit_logs', JSON.stringify(logs));
+
+        if (supabaseClient) {
+            try {
+                await supabaseClient.from('audit_logs').insert([logEntry]);
+            } catch (e) {
+                // Tabela opcional, ignora erro silenciosamente
+            }
+        }
+    }
+
+    async function dbGetAuditLogs() {
+        if (supabaseClient) {
+            try {
+                const { data, error } = await supabaseClient.from('audit_logs').select('*').order('created_at', { ascending: false }).limit(50);
+                if (!error && data && data.length > 0) return data;
+            } catch (e) {
+                // Fallback para localStorage
+            }
+        }
+        return JSON.parse(localStorage.getItem('ufinet_audit_logs')) || [];
     }
 
     function initDatabase() {
