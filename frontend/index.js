@@ -185,6 +185,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     const btnLogin = document.getElementById('btn-login');
     const btnLogout = document.getElementById('btn-logout');
     
+    const usernameInput = document.getElementById('login-username');
+    const passwordInput = document.getElementById('login-password');
+    const loginErrorBanner = document.getElementById('login-error-banner');
+    const loginErrorText = document.getElementById('login-error-text');
+    const loginCard = document.querySelector('.login-card');
+
+    const clearLoginErrors = () => {
+        if (loginErrorBanner) loginErrorBanner.style.display = 'none';
+        if (usernameInput) usernameInput.classList.remove('input-error');
+        if (passwordInput) passwordInput.classList.remove('input-error');
+        if (loginCard) loginCard.classList.remove('shake');
+    };
+
+    if (usernameInput) usernameInput.addEventListener('input', clearLoginErrors);
+    if (passwordInput) passwordInput.addEventListener('input', clearLoginErrors);
+
     if (loginForm) {
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -192,6 +208,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const passVal = document.getElementById('login-password').value.trim();
             const btnSpan = btnLogin.querySelector('span');
             
+            clearLoginErrors();
             btnLogin.disabled = true;
             btnSpan.textContent = 'Autenticando...';
             
@@ -233,13 +250,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 // 3. Fallback inteligente
                 if (!matched && targetProfile) {
-                    const isBcrypt = targetProfile.password && targetProfile.password.startsWith('$2');
-                    if (targetProfile.password === passVal || (isBcrypt && passVal === 'admin') || (usernameToAuth === 'admin' && passVal === 'admin')) {
+                    if (targetProfile.password === passVal || (usernameToAuth === 'admin' && passVal === 'admin')) {
                         matched = targetProfile;
                     }
                 }
 
                 if (matched) {
+                    clearLoginErrors();
                     // Salvar sessão persistente
                     localStorage.setItem('ufinet_session', JSON.stringify({
                         id: matched.id,
@@ -275,7 +292,37 @@ document.addEventListener('DOMContentLoaded', async () => {
                     }
                     showToast(`Bem-vindo, ${matched.name}! Acesso concedido.`, 'success');
                 } else {
-                    showToast('Usuário ou senha incorretos! Verifique os dados digitados.', 'error');
+                    // Erro detalhado e aviso visual para o usuário
+                    let errorMsg = 'Usuário ou senha incorretos! Verifique os dados digitados.';
+                    
+                    if (!targetProfile && userVal !== 'admin') {
+                        errorMsg = `Usuário "${userVal}" não encontrado. Digite seu nome, primeiro nome ou login cadastrado.`;
+                        if (usernameInput) {
+                            usernameInput.classList.add('input-error');
+                            usernameInput.focus();
+                        }
+                    } else {
+                        const identifiedName = targetProfile ? targetProfile.name : 'Admin';
+                        errorMsg = `Senha incorreta para ${identifiedName}. Verifique a digitação ou solicite a redefinição ao Coordenador.`;
+                        if (passwordInput) {
+                            passwordInput.classList.add('input-error');
+                            passwordInput.focus();
+                            passwordInput.select();
+                        }
+                    }
+
+                    if (loginErrorBanner && loginErrorText) {
+                        loginErrorText.textContent = errorMsg;
+                        loginErrorBanner.style.display = 'flex';
+                    }
+
+                    if (loginCard) {
+                        loginCard.classList.remove('shake');
+                        void loginCard.offsetWidth; // Trigger reflow
+                        loginCard.classList.add('shake');
+                    }
+
+                    showToast(errorMsg, 'error');
                 }
                 
                 btnLogin.disabled = false;

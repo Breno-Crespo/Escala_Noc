@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Escala NOC — Ufinet</title>
-    <link rel="stylesheet" href="index.css?v=33">
+    <link rel="stylesheet" href="index.css?v=34">
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,13 +25,23 @@
             </div>
             
             <form id="login-form" onsubmit="event.preventDefault();">
+                <!-- Banner de Alerta de Erro de Login -->
+                <div id="login-error-banner" class="login-error-banner" style="display: none;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <span id="login-error-text">Usuário ou senha incorretos!</span>
+                </div>
+
                 <div class="form-group-login">
                     <label for="login-username">Usuário</label>
-                    <input type="text" id="login-username" class="login-input" placeholder="Seu usuário..." required>
+                    <input type="text" id="login-username" class="login-input" placeholder="Seu nome ou usuário..." required autocomplete="username">
                 </div>
                 <div class="form-group-login">
                     <label for="login-password">Senha</label>
-                    <input type="password" id="login-password" class="login-input" placeholder="••••••••" required>
+                    <input type="password" id="login-password" class="login-input" placeholder="••••••••" required autocomplete="current-password">
                 </div>
                 <button type="submit" id="btn-login" class="btn-login">
                     <span>Entrar no Sistema</span>
@@ -680,6 +690,6 @@
     <script src="config.js"></script>
     <!-- CDN do Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="index.js?v=26"></script>
+    <script src="index.js?v=27"></script>
 </body>
 </html>
