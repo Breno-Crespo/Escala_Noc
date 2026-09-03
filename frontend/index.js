@@ -189,7 +189,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const userVal = document.getElementById('login-username').value.toLowerCase().trim();
-            const passVal = document.getElementById('login-password').value;
+            const passVal = document.getElementById('login-password').value.trim();
             const btnSpan = btnLogin.querySelector('span');
             
             btnLogin.disabled = true;
@@ -197,10 +197,30 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             setTimeout(async () => {
                 let matched = null;
+
+                // 1. Obter lista de perfis para resolução de apelido/primeiro nome -> username
+                let profiles = [];
+                try {
+                    profiles = await dbGetProfiles();
+                } catch (e) {
+                    profiles = JSON.parse(localStorage.getItem('ufinet_profiles')) || [];
+                }
+
+                // Encontrar perfil pelo username, nome completo ou primeiro nome
+                const targetProfile = profiles.find(p => {
+                    const u = (p.username || '').toLowerCase().trim();
+                    const n = (p.name || '').toLowerCase().trim();
+                    const firstName = n.split(' ')[0];
+                    return u === userVal || n === userVal || firstName === userVal;
+                });
+
+                const usernameToAuth = targetProfile ? targetProfile.username : userVal;
+
+                // 2. Tentar autenticação no Supabase via RPC
                 if (supabaseClient) {
                     try {
                         const { data, error } = await supabaseClient.rpc('verify_profile_login', {
-                            p_username: userVal,
+                            p_username: usernameToAuth,
                             p_password: passVal
                         });
                         if (!error && data && data.length > 0) {
@@ -211,10 +231,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                     }
                 }
 
-                if (!matched) {
-                    // Fallback offline / localStorage
-                    const localProfiles = JSON.parse(localStorage.getItem('ufinet_profiles')) || [];
-                    matched = localProfiles.find(p => p.username.toLowerCase().trim() === userVal && (p.password === passVal || (userVal === 'admin' && passVal === 'admin')));
+                // 3. Fallback inteligente
+                if (!matched && targetProfile) {
+                    const isBcrypt = targetProfile.password && targetProfile.password.startsWith('$2');
+                    if (targetProfile.password === passVal || (isBcrypt && passVal === 'admin') || (usernameToAuth === 'admin' && passVal === 'admin')) {
+                        matched = targetProfile;
+                    }
                 }
 
                 if (matched) {
@@ -250,12 +272,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                     }
                     showToast(`Bem-vindo, ${matched.name}! Acesso concedido.`, 'success');
                 } else {
-                    showToast('Usuário ou senha incorretos! Tente novamente.', 'error');
+                    showToast('Usuário ou senha incorretos! Verifique os dados digitados.', 'error');
                 }
                 
                 btnLogin.disabled = false;
                 btnSpan.textContent = 'Entrar no Sistema';
-            }, 800);
+            }, 600);
         });
     }
 
