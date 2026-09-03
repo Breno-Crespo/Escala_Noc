@@ -270,6 +270,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     } else {
                         navigateToTab('view-minha-escala');
                     }
+                    if (typeof initPresenceTracking === 'function') {
+                        initPresenceTracking();
+                    }
                     showToast(`Bem-vindo, ${matched.name}! Acesso concedido.`, 'success');
                 } else {
                     showToast('Usuário ou senha incorretos! Verifique os dados digitados.', 'error');
@@ -286,6 +289,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             e.preventDefault();
             
             localStorage.removeItem('ufinet_session');
+            window.onlineUsersMap = {};
             document.body.classList.add('logged-out');
             if (loginForm) loginForm.reset();
             
@@ -675,6 +679,71 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (supabaseStatusBanner) {
                 supabaseStatusBanner.innerHTML = `<span class="card-tag status-folga" style="font-size:11px; padding:4px 8px;">Estado: Local (Offline - fallback localStorage ativo)</span>`;
             }
+        } else {
+            initPresenceTracking();
+        }
+    }
+
+    // ================= TRACKING DE PRESENÇA TEMPO REAL (ONLINE/OFFLINE) =================
+    window.onlineUsersMap = {};
+
+    function initPresenceTracking() {
+        if (!supabaseClient) return;
+        const sessionUser = JSON.parse(localStorage.getItem('ufinet_session'));
+        if (!sessionUser || !sessionUser.username) return;
+
+        try {
+            const cleanUserKey = sessionUser.username.toLowerCase().trim();
+            window.onlineUsersMap[cleanUserKey] = true;
+
+            const presenceChannel = supabaseClient.channel('online-presence-room', {
+                config: {
+                    presence: {
+                        key: cleanUserKey
+                    }
+                }
+            });
+
+            presenceChannel
+                .on('presence', { event: 'sync' }, () => {
+                    const state = presenceChannel.presenceState();
+                    const newMap = {};
+                    if (sessionUser && sessionUser.username) {
+                        newMap[sessionUser.username.toLowerCase().trim()] = true;
+                    }
+                    for (let key in state) {
+                        newMap[key.toLowerCase().trim()] = true;
+                    }
+                    window.onlineUsersMap = newMap;
+                    if (document.getElementById('recent-profiles-rows')) {
+                        renderProfilesList();
+                    }
+                })
+                .on('presence', { event: 'join' }, ({ key }) => {
+                    window.onlineUsersMap[key.toLowerCase().trim()] = true;
+                    if (document.getElementById('recent-profiles-rows')) {
+                        renderProfilesList();
+                    }
+                })
+                .on('presence', { event: 'leave' }, ({ key }) => {
+                    if (sessionUser && sessionUser.username.toLowerCase().trim() !== key.toLowerCase().trim()) {
+                        delete window.onlineUsersMap[key.toLowerCase().trim()];
+                    }
+                    if (document.getElementById('recent-profiles-rows')) {
+                        renderProfilesList();
+                    }
+                })
+                .subscribe(async (status) => {
+                    if (status === 'SUBSCRIBED') {
+                        await presenceChannel.track({
+                            username: sessionUser.username,
+                            name: sessionUser.name,
+                            onlineAt: new Date().toISOString()
+                        });
+                    }
+                });
+        } catch (e) {
+            console.error("Erro no Presence tracking:", e);
         }
     }
 
@@ -1921,40 +1990,72 @@ document.addEventListener('DOMContentLoaded', async () => {
     const btnCreateProfile = document.getElementById('btn-create-profile');
     const profileForm = document.getElementById('profile-create-form');
 
+    function getProfileHierarchyRank(prof) {
+        if (prof.role === 'coordenador' || prof.username === 'admin') return 1;
+        if (prof.team === 'n2' || ['landra', 'mijares', 'caio', 'renato'].includes(prof.username)) return 2;
+        if (prof.team === 'torre' || ['jorge.luiz', 'dariel.souza', 'leandro', 'eduardo.pereira', 'rodolfo.gomes', 'rviegas', 'bguia', 'juliano'].includes(prof.username)) return 3;
+        if (prof.team === 'n1' || ['ericles.sousa', 'pedro', 'cassia', 'maxwel.dantas', 'emerson.silva', 'jonathan', 'allan.martins', 'felipe.ribeiro'].includes(prof.username)) return 4;
+        if (prof.oncall === 'sim' || ['eduardo.leite', 'fabiana', 'claudinei'].includes(prof.username)) return 5;
+        if (prof.role === 'rh') return 6;
+        return 7;
+    }
+
     function renderProfilesListFromData(profiles) {
         const tbody = document.getElementById('recent-profiles-rows');
         if (!tbody) return;
         
         tbody.innerHTML = '';
         
-        profiles.forEach(prof => {
+        // 1. Ordenação por Ordem de Hierarquia & Alfabética
+        const sortedProfiles = [...profiles].sort((a, b) => {
+            const rankA = getProfileHierarchyRank(a);
+            const rankB = getProfileHierarchyRank(b);
+            if (rankA !== rankB) return rankA - rankB;
+            return (a.name || '').localeCompare(b.name || '');
+        });
+
+        const sessionUser = JSON.parse(localStorage.getItem('ufinet_session'));
+
+        sortedProfiles.forEach(prof => {
             const tr = document.createElement('tr');
             tr.id = prof.id;
 
-            const badgeClasses = {
-                'noc': 'status-9h18h',
-                'rh': 'status-ferias',
-                'coordenador': 'status-ready'
-            };
-            const badgeTexts = {
-                'noc': 'NOC',
-                'rh': 'RH',
-                'coordenador': 'Coordenador'
-            };
-
-            const selectedClass = badgeClasses[prof.role] || 'status-folga';
-            const selectedText = badgeTexts[prof.role] || 'NOC';
+            const rank = getProfileHierarchyRank(prof);
+            let hierarchyBadge = `<span class="card-tag status-9h18h" style="font-size:10px;">NOC</span>`;
+            
+            if (rank === 1) {
+                hierarchyBadge = `<span class="card-tag status-ready" style="font-size:10px; font-weight:700; background-color:#fef3c7; color:#92400e; border:1px solid #fde68a;">👑 Coordenador</span>`;
+            } else if (rank === 2) {
+                hierarchyBadge = `<span class="card-tag" style="font-size:10px; font-weight:700; background-color:#e0e7ff; color:#3730a3; border:1px solid #c7d2fe;">⚡ Engenharia / N2</span>`;
+            } else if (rank === 3) {
+                hierarchyBadge = `<span class="card-tag" style="font-size:10px; font-weight:700; background-color:#f1f5f9; color:#334155; border:1px solid #cbd5e1;">🏢 Torre (TDC)</span>`;
+            } else if (rank === 4) {
+                hierarchyBadge = `<span class="card-tag" style="font-size:10px; font-weight:700; background-color:#ecfdf5; color:#047857; border:1px solid #a7f3d0;">📡 Operação NOC N1</span>`;
+            } else if (rank === 5) {
+                hierarchyBadge = `<span class="card-tag" style="font-size:10px; font-weight:700; background-color:#dbeafe; color:#1e40af; border:1px solid #bfdbfe;">📞 Sobreaviso</span>`;
+            } else if (rank === 6) {
+                hierarchyBadge = `<span class="card-tag status-ferias" style="font-size:10px; font-weight:700;">👥 Recursos Humanos</span>`;
+            }
 
             const oncallClass = prof.oncall === 'sim' ? 'status-ready' : (prof.oncall === 'fora' ? 'status-folga' : 'status-9h18h');
             const oncallStyle = prof.oncall === 'sim' ? 'background-color:#dbeafe; color:#1e40af;' : (prof.oncall === 'fora' ? 'background-color:#f1f5f9; color:#475569;' : 'background-color:#ecfdf5; color:#047857;');
-            const oncallText = prof.oncall === 'sim' ? 'Sobreaviso' : (prof.oncall === 'fora' ? 'Não' : 'NOC');
+            const oncallText = prof.oncall === 'sim' ? 'Sobreaviso' : (prof.oncall === 'fora' ? 'Não' : 'Escala NOC');
+
+            // 2. Status Online / Offline em Tempo Real
+            const isOnline = (window.onlineUsersMap && window.onlineUsersMap[prof.username.toLowerCase().trim()]) || 
+                             (sessionUser && sessionUser.username.toLowerCase().trim() === prof.username.toLowerCase().trim());
+
+            const statusPill = isOnline
+                ? `<span class="status-online-pill online"><span class="pulse-dot"></span> Online</span>`
+                : `<span class="status-online-pill offline"><span class="gray-dot"></span> Offline</span>`;
 
             tr.innerHTML = `
                 <td style="text-align:left; padding-left:10px; font-weight:700;" class="prof-td-name">${prof.name}</td>
                 <td class="prof-td-user"><code>${prof.username}</code></td>
-                <td class="prof-td-role" data-val="${prof.role}"><span class="card-tag ${selectedClass}" style="font-size:10px;">${selectedText}</span></td>
+                <td class="prof-td-role" data-val="${prof.role}">${hierarchyBadge}</td>
                 <td class="prof-td-team" data-val="${prof.team}" style="display:none;">${prof.team === 'n1' ? 'Equipe N1' : (prof.team === 'rh' ? 'Recursos Humanos (RH)' : 'Torre de Controle')}</td>
                 <td class="prof-td-oncall" data-val="${prof.oncall}"><span class="card-tag ${oncallClass}" style="font-size:10px; ${oncallStyle}">${oncallText}</span></td>
+                <td class="prof-td-status" style="text-align:center;">${statusPill}</td>
                 <td class="prof-td-password" style="display:none;">${prof.password}</td>
                 <td>
                     <div style="display:flex; gap:6px; justify-content:center;">
