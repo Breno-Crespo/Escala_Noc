@@ -1034,48 +1034,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         let profiles = await dbGetProfiles();
         const isSeeded = localStorage.getItem('ufinet_db_seeded') === 'true';
 
-        // Auto-healing para perfis ausentes no Supabase (como os novos membros da N2)
-        if (supabaseClient && profiles.length > 1) {
-            try {
-                const initialProfiles = [
-                    { id: 'profile-row-admin-initial', name: 'Coordenador Admin', username: 'admin', role: 'coordenador', team: 'torre', oncall: 'nao', password: 'admin' },
-                    { id: 'profile-ericles', name: 'Ericles Sousa', username: 'ericles.sousa', role: 'noc', team: 'n1', oncall: 'nao', password: 'admin' },
-                    { id: 'profile-pedro', name: 'Pedro', username: 'pedro', role: 'noc', team: 'n1', oncall: 'nao', password: 'admin' },
-                    { id: 'profile-cassia', name: 'Cassia', username: 'cassia', role: 'noc', team: 'n1', oncall: 'nao', password: 'admin' },
-                    { id: 'profile-maxwel', name: 'Maxwel Dantas', username: 'maxwel.dantas', role: 'noc', team: 'n1', oncall: 'nao', password: 'admin' },
-                    { id: 'profile-emerson', name: 'Emerson Silva', username: 'emerson.silva', role: 'noc', team: 'n1', oncall: 'nao', password: 'admin' },
-                    { id: 'profile-jonathan', name: 'Jonathan (RJ)', username: 'jonathan', role: 'noc', team: 'n1', oncall: 'nao', password: 'admin' },
-                    { id: 'profile-allan', name: 'Allan Martins', username: 'allan.martins', role: 'noc', team: 'n1', oncall: 'nao', password: 'admin' },
-                    { id: 'profile-felipe', name: 'Felipe Ribeiro', username: 'felipe.ribeiro', role: 'noc', team: 'n1', oncall: 'nao', password: 'admin' },
-                    { id: 'profile-jorge', name: 'Jorge Luiz', username: 'jorge.luiz', role: 'noc', team: 'torre', oncall: 'nao', password: 'admin' },
-                    { id: 'profile-dariel', name: 'Dariel Souza', username: 'dariel.souza', role: 'noc', team: 'torre', oncall: 'nao', password: 'admin' },
-                    { id: 'profile-leandro', name: 'Leandro', username: 'leandro', role: 'noc', team: 'torre', oncall: 'nao', password: 'admin' },
-                    { id: 'profile-eduardop', name: 'Eduardo Pereira', username: 'eduardo.pereira', role: 'noc', team: 'torre', oncall: 'nao', password: 'admin' },
-                    { id: 'profile-rodolfo', name: 'Rodolfo Gomes', username: 'rodolfo.gomes', role: 'noc', team: 'torre', oncall: 'nao', password: 'admin' },
-                    { id: 'profile-breno', name: 'Breno', username: 'breno', role: 'noc', team: 'torre', oncall: 'nao', password: 'admin' },
-                    { id: 'profile-raphael', name: 'Raphael (RJ)', username: 'raphael', role: 'noc', team: 'torre', oncall: 'nao', password: 'admin' },
-                    { id: 'profile-juliano', name: 'Juliano (RJ)', username: 'juliano', role: 'noc', team: 'torre', oncall: 'nao', password: 'admin' },
-                    { id: 'profile-eduardo-l', name: 'Eduardo Leite', username: 'eduardo.leite', role: 'noc', team: 'torre', oncall: 'sim', password: 'admin' },
-                    { id: 'profile-fabiana', name: 'Fabiana', username: 'fabiana', role: 'noc', team: 'torre', oncall: 'sim', password: 'admin' },
-                    { id: 'profile-claudinei', name: 'Claudinei', username: 'claudinei', role: 'noc', team: 'torre', oncall: 'sim', password: 'admin' },
-                    { id: 'profile-landra', name: 'Bruno Landra', username: 'landra', role: 'noc', team: 'n2', oncall: 'nao', password: 'admin' },
-                    { id: 'profile-mijares', name: 'Jose Mijares', username: 'mijares', role: 'noc', team: 'n2', oncall: 'nao', password: 'admin' },
-                    { id: 'profile-caio', name: 'Caio Paiva', username: 'caio', role: 'noc', team: 'n2', oncall: 'nao', password: 'admin' },
-                    { id: 'profile-renato', name: 'Renato RX', username: 'renato', role: 'noc', team: 'n2', oncall: 'nao', password: 'admin' }
-                ];
-                const existingUsernames = new Set(profiles.map(p => p.username));
-                const missingProfiles = initialProfiles.filter(p => !existingUsernames.has(p.username));
-                if (missingProfiles.length > 0) {
-                    const { error } = await supabaseClient.from('profiles').insert(missingProfiles);
-                    if (!error) {
-                        profiles = await dbGetProfiles();
-                    }
-                }
-            } catch (e) {
-                console.error("Erro na auto-inicializacao de perfis:", e);
-            }
-        }
-
         // Só faz a inserção inicial se o banco na nuvem estiver vazio e localmente não tivermos marcado como Seeded!
         if (supabaseClient && !isSeeded && profiles.length <= 1) {
             const localProfiles = JSON.parse(localStorage.getItem('ufinet_profiles')) || [];
