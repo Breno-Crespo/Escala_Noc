@@ -705,13 +705,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Gravar no Supabase (Nuvem)
         if (supabaseClient) {
             try {
-                if (prof.password && prof.password.startsWith('$2')) {
-                    const { password, ...profWithoutPass } = prof;
-                    const { error } = await supabaseClient.from('profiles').upsert([profWithoutPass]);
-                    if (error) console.error("Erro Supabase SaveProfile (sem senha):", error);
+                const { data: existingRows } = await supabaseClient.from('profiles').select('id,password').eq('id', prof.id);
+                const isExisting = existingRows && existingRows.length > 0;
+
+                if (isExisting) {
+                    if (!prof.password || prof.password.startsWith('$2')) {
+                        const { id, password, ...fieldsToUpdate } = prof;
+                        const { error } = await supabaseClient.from('profiles').update(fieldsToUpdate).eq('id', prof.id);
+                        if (error) console.error("Erro Supabase UpdateProfile (mantendo senha):", error);
+                    } else {
+                        const { id, ...fieldsToUpdate } = prof;
+                        const { error } = await supabaseClient.from('profiles').update(fieldsToUpdate).eq('id', prof.id);
+                        if (error) console.error("Erro Supabase UpdateProfile (com nova senha):", error);
+                    }
                 } else {
-                    const { error } = await supabaseClient.from('profiles').upsert([prof]);
-                    if (error) console.error("Erro Supabase SaveProfile (com nova senha):", error);
+                    const { error } = await supabaseClient.from('profiles').insert([prof]);
+                    if (error) console.error("Erro Supabase InsertProfile:", error);
                 }
             } catch (e) {
                 console.error("Erro Supabase SaveProfile:", e);
